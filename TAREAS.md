@@ -1,10 +1,10 @@
 # Cotizador — tareas para AI Router
 
-Cómo usar esta lista: una tarea a la vez. Copia el texto del recuadro, pégalo en **Instruction** del panel **AI Router** de VS Code y pulsa **Run Task**. Al terminar: revisa los cambios, ejecuta `npm test`, y si está bien, haz commit. Marca la tarea con una `x`.
+Cómo usar esta lista: una tarea a la vez. Copia el texto del recuadro, pégalo en **Instruction** del panel **AI Router** de VS Code y pulsa **Run Task**. Al terminar: revisa los cambios, ejecuta `npm.cmd test`, y si está bien, haz commit. Marca la tarea con una `x`.
 
 Guía completa: `<workspace>\AI-Router\docs\GUIA-DE-USO.md`.
 
-Para ver la app: `npm start` y abre `http://localhost:8080` (a partir de la tarea 3).
+Para ver la app: `npm.cmd start` y abre `http://localhost:8080` (a partir de la tarea 3).
 
 ---
 
@@ -34,7 +34,7 @@ js/calc.js exporta funciones puras, con el dinero en centavos enteros:
 test/calc.test.js prueba cada función con node:test, incluido 10.50 + 2.25 = 12.75 y un impuesto de 10.1% redondeado.
 ```
 
-- [ ] Hecha · `npm test` pasa · commit
+- [ ] Hecha · `npm.cmd test` pasa · commit
 
 ## 2. Guardado
 
@@ -50,7 +50,7 @@ Si lo guardado está dañado o vacío, devuelve valores por defecto sin lanzar e
 test/store.test.js usa un almacén falso en memoria y prueba cada función, incluido el número consecutivo y datos dañados.
 ```
 
-- [ ] Hecha · `npm test` pasa · commit
+- [ ] Hecha · `npm.cmd test` pasa · commit
 
 ## 3. Página y servidor local
 
@@ -112,7 +112,7 @@ test/share.test.js prueba las dos funciones, incluido un teléfono con espacios 
 El botón "WhatsApp" abre ese enlace en una pestaña nueva con la cotización del formulario y el teléfono del cliente.
 ```
 
-- [ ] Hecha · `npm test` pasa · el enlace abre WhatsApp · commit
+- [ ] Hecha · `npm.cmd test` pasa · el enlace abre WhatsApp · commit
 
 ## 8. Imprimir o guardar en PDF
 

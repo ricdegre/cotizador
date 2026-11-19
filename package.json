@@ -1,0 +1,11 @@
+{
+  "name": "cotiza-rapido",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cotizaciones rápidas desde el teléfono. Hecho por IngenioTech.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "start": "node server.js"
+  }
+}
