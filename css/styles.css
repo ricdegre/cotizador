@@ -377,3 +377,9 @@ button:disabled {
 .boton-borrar:hover {
   background: #912018;
 }
+
+/* Hoja de impresión: solo se ve al imprimir (css/print.css). */
+
+.hoja {
+  display: none;
+}

@@ -1,6 +1,6 @@
 // Une la página con los módulos: formulario de cotización, historial, "Mi negocio" y barra de secciones.
 
-import { aCentavos, subtotal, impuesto, total, formatoDinero } from './calc.js';
+import { aCentavos, totalLinea, subtotal, impuesto, total, formatoDinero } from './calc.js';
 import { crearStore } from './store.js';
 import { textoCotizacion, enlaceWhatsApp } from './share.js';
 
@@ -24,6 +24,10 @@ const estadoCotizacion = document.getElementById('cotizacion-estado');
 const botonGuardar = document.getElementById('guardar-cotizacion');
 const botonNueva = document.getElementById('nueva-cotizacion');
 const botonWhatsApp = document.getElementById('enviar-whatsapp');
+const botonImprimir = document.getElementById('imprimir-cotizacion');
+const hoja = document.getElementById('hoja-impresion');
+const tablaHoja = document.getElementById('hoja-tabla');
+const lineasHoja = document.getElementById('hoja-lineas');
 const listaHistorial = document.getElementById('lista-historial');
 const plantillaHistorial = document.getElementById('plantilla-historial');
 const historialVacio = document.getElementById('historial-vacio');
@@ -204,6 +208,57 @@ function enviarWhatsApp() {
   );
 }
 
+// Pone un texto en la hoja de impresión; si queda vacío, no se imprime.
+function ponerHoja(nombre, texto) {
+  const elemento = hoja.querySelector(`[data-hoja="${nombre}"]`);
+  elemento.textContent = texto;
+  (elemento.closest('[data-hoja-fila]') ?? elemento).hidden = !texto;
+}
+
+// Llena la hoja que se ve al imprimir con la cotización del formulario.
+// Sin guardar no tiene número, y lleva la fecha de hoy.
+function llenarHoja() {
+  const cotizacion = leerFormulario();
+  const base = subtotal(cotizacion.lineas);
+  const cargo = impuesto(base, negocio.impuesto);
+  const cliente = [cotizacion.cliente.nombre, cotizacion.cliente.telefono].filter(Boolean).join(' · ');
+
+  ponerHoja('negocio-nombre', negocio.nombre);
+  ponerHoja('negocio-telefono', negocio.telefono ? `Tel. ${negocio.telefono}` : '');
+  ponerHoja('numero', abierta.numero ? `N.º ${abierta.numero}` : 'Sin guardar');
+  ponerHoja('fecha', formatoFecha(abierta.fecha || new Date().toISOString()));
+  ponerHoja('cliente', cliente);
+
+  const filas = cotizacion.lineas.map((linea) => {
+    const fila = document.createElement('tr');
+    const textos = [
+      linea.descripcion,
+      aTexto(linea.cantidad).trim(),
+      formatoDinero(linea.precio),
+      formatoDinero(totalLinea(linea)),
+    ];
+    for (const texto of textos) {
+      const celda = document.createElement('td');
+      celda.textContent = texto;
+      fila.append(celda);
+    }
+    return fila;
+  });
+  lineasHoja.replaceChildren(...filas);
+  tablaHoja.hidden = !filas.length;
+
+  ponerHoja('subtotal', formatoDinero(base));
+  ponerHoja('impuesto', cargo > 0 ? formatoDinero(cargo) : '');
+  ponerHoja('total', formatoDinero(base + cargo));
+  ponerHoja('notas', cotizacion.notas);
+  ponerHoja('nota', negocio.nota);
+}
+
+function imprimirCotizacion() {
+  llenarHoja();
+  window.print();
+}
+
 function dato(fila, nombre) {
   return fila.querySelector(`[data-dato="${nombre}"]`);
 }
@@ -320,6 +375,10 @@ listaLineas.addEventListener('click', (evento) => {
 botonGuardar.addEventListener('click', guardarCotizacion);
 botonNueva.addEventListener('click', nuevaCotizacion);
 botonWhatsApp.addEventListener('click', enviarWhatsApp);
+botonImprimir.addEventListener('click', imprimirCotizacion);
+
+// También al imprimir desde el menú del navegador (Ctrl+P).
+window.addEventListener('beforeprint', llenarHoja);
 
 listaHistorial.addEventListener('click', (evento) => {
   const boton = evento.target.closest('[data-accion]');

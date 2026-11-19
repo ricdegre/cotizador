@@ -1,0 +1,148 @@
+/* Estilos de impresión: solo la cotización, como una hoja limpia para guardar en PDF. */
+
+/* Sin margen de página, el navegador no añade sus encabezados y pies
+   (fecha, título, URL, número de página). El margen lo pone .hoja. */
+@page {
+  margin: 0;
+}
+
+body {
+  padding: 0;
+  font-size: 11pt;
+  color: #000;
+  background: #fff;
+}
+
+/* Solo se imprime la hoja; secciones, botones, barra inferior y pie no. */
+body > :not(.hoja) {
+  display: none !important;
+}
+
+/* Margen interior de la hoja; se repite en cada página si ocupa más de una. */
+.hoja {
+  display: block;
+  padding: 15mm;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* Negocio */
+
+.hoja-negocio {
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--color-principal);
+}
+
+.hoja-negocio p {
+  margin: 0;
+}
+
+.hoja-negocio-nombre {
+  font-size: 18pt;
+  font-weight: 700;
+  color: var(--color-principal);
+}
+
+/* Número, fecha y cliente */
+
+.hoja-datos {
+  margin: 0 0 1.25rem;
+}
+
+.hoja-datos div {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.hoja-datos dt {
+  min-width: 6rem;
+  font-weight: 700;
+}
+
+.hoja-datos dd {
+  margin: 0;
+}
+
+/* Líneas */
+
+.hoja-lineas {
+  width: 100%;
+  margin-bottom: 1rem;
+  border-collapse: collapse;
+}
+
+.hoja-lineas thead {
+  display: table-header-group;
+}
+
+.hoja-lineas tr {
+  break-inside: avoid;
+}
+
+.hoja-lineas th,
+.hoja-lineas td {
+  padding: 0.35rem 0.5rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid #999;
+}
+
+.hoja-lineas th {
+  border-bottom: 2px solid #000;
+}
+
+/* Cantidad, precio e importe a la derecha. */
+.hoja-lineas th:not(:first-child),
+.hoja-lineas td:not(:first-child) {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Totales a la derecha */
+
+.hoja-totales {
+  width: min(100%, 18rem);
+  margin: 0 0 1.5rem auto;
+  break-inside: avoid;
+}
+
+.hoja-totales div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.hoja-totales dt {
+  font-weight: 600;
+}
+
+.hoja-totales dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.hoja-total {
+  margin-top: 0.25rem;
+  padding-top: 0.25rem;
+  font-size: 13pt;
+  font-weight: 700;
+  border-top: 2px solid #000;
+}
+
+/* Notas y nota al pie */
+
+.hoja-notas {
+  margin: 0 0 1.5rem;
+  white-space: pre-line;
+}
+
+.hoja-pie {
+  margin: 0;
+  padding-top: 0.75rem;
+  font-size: 9.5pt;
+  color: #444;
+  white-space: pre-line;
+  border-top: 1px solid #999;
+}

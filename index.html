@@ -7,6 +7,7 @@
   <meta name="description" content="Cotizaciones rápidas desde el teléfono. Hecho por IngenioTech.">
   <title>Cotiza Rápido</title>
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/print.css" media="print">
   <script type="module" src="js/app.js"></script>
 </head>
 <body>
@@ -52,6 +53,7 @@
         <div class="acciones">
           <button type="button" id="guardar-cotizacion">Guardar</button>
           <button type="button" id="enviar-whatsapp" class="boton-secundario">WhatsApp</button>
+          <button type="button" id="imprimir-cotizacion" class="boton-secundario">Imprimir / PDF</button>
           <button type="button" id="nueva-cotizacion" class="boton-secundario">Nueva cotización</button>
         </div>
         <p id="cotizacion-estado" class="aviso" role="status"></p>
@@ -146,5 +148,39 @@
       </div>
     </form>
   </dialog>
+
+  <article id="hoja-impresion" class="hoja">
+    <header class="hoja-negocio">
+      <p class="hoja-negocio-nombre" data-hoja="negocio-nombre"></p>
+      <p data-hoja="negocio-telefono"></p>
+    </header>
+
+    <dl class="hoja-datos">
+      <div data-hoja-fila><dt>Cotización</dt><dd data-hoja="numero"></dd></div>
+      <div data-hoja-fila><dt>Fecha</dt><dd data-hoja="fecha"></dd></div>
+      <div data-hoja-fila><dt>Cliente</dt><dd data-hoja="cliente"></dd></div>
+    </dl>
+
+    <table id="hoja-tabla" class="hoja-lineas">
+      <thead>
+        <tr>
+          <th scope="col">Descripción</th>
+          <th scope="col">Cantidad</th>
+          <th scope="col">Precio</th>
+          <th scope="col">Importe</th>
+        </tr>
+      </thead>
+      <tbody id="hoja-lineas"></tbody>
+    </table>
+
+    <dl class="hoja-totales">
+      <div data-hoja-fila><dt>Subtotal</dt><dd data-hoja="subtotal"></dd></div>
+      <div data-hoja-fila><dt>Impuesto</dt><dd data-hoja="impuesto"></dd></div>
+      <div class="hoja-total" data-hoja-fila><dt>Total</dt><dd data-hoja="total"></dd></div>
+    </dl>
+
+    <p class="hoja-notas" data-hoja="notas"></p>
+    <p class="hoja-pie" data-hoja="nota"></p>
+  </article>
 </body>
 </html>
