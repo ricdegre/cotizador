@@ -2,7 +2,7 @@
 // Las rutas son relativas a sw.js, así funciona también publicada en una subcarpeta.
 // Al cambiar archivos, sube VERSION para que se vuelvan a guardar.
 
-const VERSION = 1;
+const VERSION = 2;
 const PREFIJO = 'cotiza-rapido-';
 const CACHE = `${PREFIJO}v${VERSION}`;
 
@@ -13,6 +13,7 @@ const ARCHIVOS = [
   'css/print.css',
   'js/app.js',
   'js/calc.js',
+  'js/i18n.js',
   'js/share.js',
   'js/store.js',
   'manifest.webmanifest',

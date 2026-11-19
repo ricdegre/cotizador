@@ -7,6 +7,7 @@ export const IDIOMAS = ['es', 'en'];
 export const TEXTOS = {
   es: {
     'idioma.nombre': 'Español',
+    'app.nombre': 'Cotiza Rápido',
     'app.titulo': 'Cotiza Rápido',
     'app.descripcion': 'Cotizaciones rápidas desde el teléfono. Hecho por IngenioTech.',
     'pie.texto': 'Hecho por IngenioTech',
@@ -135,7 +136,8 @@ export const TEXTOS = {
   en: {
     'idioma.nombre': 'English',
     'idioma.etiqueta': 'Idioma / Language',
-    'app.titulo': 'Cotiza Rápido',
+    'app.nombre': 'Quick Quote',
+    'app.titulo': 'Quick Quote',
     'app.descripcion': 'Quick quotes from your phone. Made by IngenioTech.',
     'pie.texto': 'Made by IngenioTech',
 

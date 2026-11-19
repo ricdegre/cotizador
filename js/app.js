@@ -68,11 +68,12 @@ function precioTexto(centavos) {
   return `${Math.floor(valor / 100)}.${String(valor % 100).padStart(2, '0')}`;
 }
 
-// Fecha ISO -> "19 nov 2026". Si no es una fecha, se muestra tal cual.
+// Fecha ISO -> formato del idioma elegido. Si no es una fecha, se muestra tal cual.
 function formatoFecha(fecha) {
   const valor = new Date(fecha);
   if (Number.isNaN(valor.getTime())) return aTexto(fecha);
-  return valor.toLocaleDateString('es', { day: 'numeric', month: 'short', year: 'numeric' });
+  const locale = idioma === 'en' ? 'en-US' : 'es';
+  return valor.toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 // Las líneas del formulario, con el precio en centavos.
@@ -116,12 +117,12 @@ function guardarNegocio() {
       idioma,
     });
   } catch {
-    estadoNegocio.textContent = 'No se pudo guardar. Revisa que el navegador permita guardar datos.';
+    estadoNegocio.textContent = t('error.guardar', idioma);
     return;
   }
   mostrarNegocio();
   recalcular();
-  estadoNegocio.textContent = 'Datos guardados.';
+  estadoNegocio.textContent = t('negocio.guardado', idioma);
 }
 
 // Pone los textos del idioma en lo marcado con data-i18n (el texto),
@@ -143,6 +144,7 @@ function traducir(raiz, lengua) {
 function aplicarIdioma(nuevoIdioma) {
   document.documentElement.lang = nuevoIdioma;
   traducir(document, nuevoIdioma);
+  document.title = t('app.nombre', nuevoIdioma);
   for (const plantilla of document.querySelectorAll('template')) {
     traducir(plantilla.content, nuevoIdioma);
   }
@@ -171,8 +173,11 @@ function quitarLinea(fila) {
 
 function mostrarNumero() {
   numeroCotizacion.textContent = abierta.numero
-    ? `Cotización n.º ${abierta.numero} · ${formatoFecha(abierta.fecha)}`
-    : 'Cotización nueva, sin guardar';
+    ? t('cotizacion.numero', idioma, {
+        numero: abierta.numero,
+        fecha: formatoFecha(abierta.fecha),
+      })
+    : t('cotizacion.sinGuardar', idioma);
 }
 
 // La cotización escrita en el formulario; las líneas vacías no se guardan.
@@ -218,13 +223,13 @@ function guardarCotizacion() {
     store.guardarCliente(cotizacion.cliente);
     guardada = store.guardarCotizacion({ ...cotizacion, ...abierta });
   } catch {
-    estadoCotizacion.textContent = 'No se pudo guardar. Revisa que el navegador permita guardar datos.';
+    estadoCotizacion.textContent = t('error.guardar', idioma);
     return;
   }
   mostrarClientes();
   abierta = { numero: guardada.numero, fecha: guardada.fecha };
   mostrarNumero();
-  estadoCotizacion.textContent = `Cotización n.º ${guardada.numero} guardada.`;
+  estadoCotizacion.textContent = t('cotizacion.guardada', idioma, { numero: guardada.numero });
 }
 
 function nuevaCotizacion() {
@@ -241,7 +246,7 @@ function nuevaCotizacion() {
 // dirigida al teléfono del cliente (si no hay, WhatsApp deja elegir).
 function enviarWhatsApp() {
   const cotizacion = { ...leerFormulario(), ...abierta };
-  const texto = textoCotizacion(cotizacion, negocio);
+  const texto = textoCotizacion(cotizacion, negocio, idioma);
   window.open(
     enlaceWhatsApp(cotizacion.cliente.telefono, texto, negocio.codigoPais),
     '_blank',
@@ -265,8 +270,16 @@ function llenarHoja() {
   const cliente = [cotizacion.cliente.nombre, cotizacion.cliente.telefono].filter(Boolean).join(' · ');
 
   ponerHoja('negocio-nombre', negocio.nombre);
-  ponerHoja('negocio-telefono', negocio.telefono ? `Tel. ${negocio.telefono}` : '');
-  ponerHoja('numero', abierta.numero ? `N.º ${abierta.numero}` : 'Sin guardar');
+  ponerHoja(
+    'negocio-telefono',
+    negocio.telefono ? t('hoja.telefono', idioma, { telefono: negocio.telefono }) : '',
+  );
+  ponerHoja(
+    'numero',
+    abierta.numero
+      ? t('hoja.numero', idioma, { numero: abierta.numero })
+      : t('hoja.sinGuardar', idioma),
+  );
   ponerHoja('fecha', formatoFecha(abierta.fecha || new Date().toISOString()));
   ponerHoja('cliente', cliente);
 
@@ -334,7 +347,7 @@ function cargarCotizacion(numero, comoNueva) {
   const cotizacion = store.leerCotizacion(numero);
   if (!cotizacion) {
     mostrarHistorial();
-    estadoHistorial.textContent = 'Esa cotización ya no existe.';
+    estadoHistorial.textContent = t('historial.noExiste', idioma);
     return;
   }
   llenarFormulario(cotizacion);
@@ -343,7 +356,7 @@ function cargarCotizacion(numero, comoNueva) {
     : { numero: cotizacion.numero, fecha: aTexto(cotizacion.fecha) };
   mostrarNumero();
   estadoCotizacion.textContent = comoNueva
-    ? `Copia de la n.º ${numero}. Pulsa "Guardar" para darle número.`
+    ? t('cotizacion.copia', idioma, { numero })
     : '';
   mostrarSeccion('cotizacion');
   formulario.elements.clienteNombre.focus();
@@ -363,12 +376,12 @@ function confirmarBorrado(texto) {
 }
 
 async function borrarCotizacion(numero) {
-  if (!(await confirmarBorrado(`¿Borrar la cotización n.º ${numero}? No se puede deshacer.`))) return;
+  if (!(await confirmarBorrado(t('confirmar.cotizacion', idioma, { numero })))) return;
   let borrada;
   try {
     borrada = store.borrarCotizacion(numero);
   } catch {
-    estadoHistorial.textContent = 'No se pudo borrar. Revisa que el navegador permita guardar datos.';
+    estadoHistorial.textContent = t('error.borrar', idioma);
     return;
   }
   // Si estaba abierta, lo que queda en el formulario pasa a ser una nueva.
@@ -378,8 +391,8 @@ async function borrarCotizacion(numero) {
   }
   mostrarHistorial();
   estadoHistorial.textContent = borrada
-    ? `Cotización n.º ${numero} borrada.`
-    : 'Esa cotización ya no existía.';
+    ? t('historial.borrada', idioma, { numero })
+    : t('historial.noExistia', idioma);
 }
 
 // Muestra la sección elegida, oculta las otras y marca su botón.
@@ -464,15 +477,26 @@ selectorIdioma.addEventListener('change', () => {
     negocio = store.guardarNegocio({ ...negocio, idioma: selectorIdioma.value });
   } catch {
     selectorIdioma.value = idioma;
-    estadoNegocio.textContent = 'No se pudo guardar. Revisa que el navegador permita guardar datos.';
+    estadoNegocio.textContent = t('error.guardar', idioma);
     return;
   }
   idioma = negocio.idioma;
   selectorIdioma.value = idioma;
   aplicarIdioma(idioma);
+  mostrarNumero();
   mostrarHistorial();
   mostrarClientes();
   mostrarServicios();
+  textoBorrar.textContent = '';
+  for (const estado of [
+    estadoCotizacion,
+    estadoHistorial,
+    estadoNegocio,
+    estadoClientes,
+    estadoServicios,
+  ]) {
+    estado.textContent = '';
+  }
 });
 
 // Clientes guardados. Se sugieren en la cotización y, al elegir uno,
@@ -509,18 +533,18 @@ function buscarCliente(nombre) {
 }
 
 async function borrarCliente(nombre) {
-  if (!(await confirmarBorrado(`¿Borrar el cliente "${nombre}"?`))) return;
+  if (!(await confirmarBorrado(t('confirmar.cliente', idioma, { nombre })))) return;
   let borrado;
   try {
     borrado = store.borrarCliente(nombre);
   } catch {
-    estadoClientes.textContent = 'No se pudo borrar. Revisa que el navegador permita guardar datos.';
+    estadoClientes.textContent = t('error.borrar', idioma);
     return;
   }
   mostrarClientes();
   estadoClientes.textContent = borrado
-    ? `Cliente "${nombre}" borrado.`
-    : 'Ese cliente ya no existía.';
+    ? t('clientes.borrado', idioma, { nombre })
+    : t('clientes.noExistia', idioma);
 }
 
 nombreCliente.addEventListener('input', () => {
@@ -589,34 +613,36 @@ function anadirServicio() {
       precio: aCentavos(campos.precio.value),
     });
   } catch {
-    estadoServicios.textContent = 'No se pudo guardar. Revisa que el navegador permita guardar datos.';
+    estadoServicios.textContent = t('error.guardar', idioma);
     return;
   }
   if (!guardado) {
-    estadoServicios.textContent = 'Escribe la descripción del servicio.';
+    estadoServicios.textContent = t('servicios.faltaDescripcion', idioma);
     campos.descripcion.focus();
     return;
   }
   mostrarServicios();
   formularioServicio.reset();
   campos.descripcion.focus();
-  estadoServicios.textContent = `Servicio "${guardado.descripcion}" guardado.`;
+  estadoServicios.textContent = t('servicios.guardado', idioma, {
+    descripcion: guardado.descripcion,
+  });
 }
 
 async function borrarServicio(descripcion) {
-  if (!(await confirmarBorrado(`¿Borrar el servicio "${descripcion}"?`))) return;
+  if (!(await confirmarBorrado(t('confirmar.servicio', idioma, { descripcion })))) return;
   let borrado;
   try {
     borrado = store.borrarServicio(descripcion);
   } catch {
-    estadoServicios.textContent = 'No se pudo borrar. Revisa que el navegador permita guardar datos.';
+    estadoServicios.textContent = t('error.borrar', idioma);
     return;
   }
   mostrarServicios();
   formularioServicio.elements.descripcion.focus();
   estadoServicios.textContent = borrado
-    ? `Servicio "${descripcion}" borrado.`
-    : 'Ese servicio ya no existía.';
+    ? t('servicios.borrado', idioma, { descripcion })
+    : t('servicios.noExistia', idioma);
 }
 
 // Al elegir (o escribir) un servicio guardado en la descripción, se pone su
