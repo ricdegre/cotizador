@@ -47,6 +47,13 @@
           <div><dt>Impuesto</dt><dd id="total-impuesto">$0.00</dd></div>
           <div class="total-final"><dt>Total</dt><dd id="total-total">$0.00</dd></div>
         </dl>
+
+        <p id="cotizacion-numero" class="numero-cotizacion"></p>
+        <div class="acciones">
+          <button type="button" id="guardar-cotizacion">Guardar</button>
+          <button type="button" id="nueva-cotizacion" class="boton-secundario">Nueva cotización</button>
+        </div>
+        <p id="cotizacion-estado" class="aviso" role="status"></p>
       </form>
 
       <template id="plantilla-linea">
@@ -70,6 +77,23 @@
 
     <section id="historial" aria-labelledby="titulo-historial" hidden>
       <h2 id="titulo-historial">Historial</h2>
+
+      <p id="historial-vacio" class="vacio">Todavía no hay cotizaciones guardadas.</p>
+      <ul id="lista-historial" class="historial"></ul>
+      <p id="historial-estado" class="aviso" role="status"></p>
+
+      <template id="plantilla-historial">
+        <li class="cotizacion-guardada">
+          <p class="cotizacion-titulo"><span data-dato="numero"></span> · <span data-dato="fecha"></span></p>
+          <p data-dato="cliente"></p>
+          <p class="cotizacion-total" data-dato="total"></p>
+          <div class="acciones">
+            <button type="button" class="boton-secundario" data-accion="abrir">Abrir</button>
+            <button type="button" class="boton-secundario" data-accion="duplicar">Duplicar</button>
+            <button type="button" class="boton-peligro" data-accion="borrar">Borrar</button>
+          </div>
+        </li>
+      </template>
     </section>
 
     <section id="negocio" aria-labelledby="titulo-negocio" hidden>

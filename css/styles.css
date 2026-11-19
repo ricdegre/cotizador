@@ -288,3 +288,58 @@ button:disabled {
   font-weight: 600;
   color: var(--color-principal);
 }
+
+/* Guardar e historial */
+
+.numero-cotizacion {
+  margin: 1rem 0 0;
+  font-weight: 600;
+  color: var(--color-texto-suave);
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.acciones button {
+  flex: 1 1 auto;
+}
+
+.vacio {
+  color: var(--color-texto-suave);
+}
+
+.historial {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cotizacion-guardada {
+  margin-bottom: 0.75rem;
+  padding: 0.75rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+
+.cotizacion-guardada p {
+  margin: 0 0 0.25rem;
+}
+
+.cotizacion-titulo {
+  font-weight: 700;
+  color: var(--color-principal);
+}
+
+.cotizacion-total {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.cotizacion-guardada .acciones {
+  margin-top: 0.75rem;
+}
