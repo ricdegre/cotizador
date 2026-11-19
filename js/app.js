@@ -2,6 +2,7 @@
 
 import { aCentavos, subtotal, impuesto, total, formatoDinero } from './calc.js';
 import { crearStore } from './store.js';
+import { textoCotizacion, enlaceWhatsApp } from './share.js';
 
 const store = crearStore(localStorage);
 
@@ -22,6 +23,7 @@ const numeroCotizacion = document.getElementById('cotizacion-numero');
 const estadoCotizacion = document.getElementById('cotizacion-estado');
 const botonGuardar = document.getElementById('guardar-cotizacion');
 const botonNueva = document.getElementById('nueva-cotizacion');
+const botonWhatsApp = document.getElementById('enviar-whatsapp');
 const listaHistorial = document.getElementById('lista-historial');
 const plantillaHistorial = document.getElementById('plantilla-historial');
 const historialVacio = document.getElementById('historial-vacio');
@@ -188,6 +190,14 @@ function nuevaCotizacion() {
   formulario.elements.clienteNombre.focus();
 }
 
+// Abre WhatsApp en una pestaña nueva con la cotización del formulario,
+// dirigida al teléfono del cliente (si no hay, WhatsApp deja elegir).
+function enviarWhatsApp() {
+  const cotizacion = { ...leerFormulario(), ...abierta };
+  const texto = textoCotizacion(cotizacion, negocio);
+  window.open(enlaceWhatsApp(cotizacion.cliente.telefono, texto), '_blank', 'noopener');
+}
+
 function dato(fila, nombre) {
   return fila.querySelector(`[data-dato="${nombre}"]`);
 }
@@ -303,6 +313,7 @@ listaLineas.addEventListener('click', (evento) => {
 
 botonGuardar.addEventListener('click', guardarCotizacion);
 botonNueva.addEventListener('click', nuevaCotizacion);
+botonWhatsApp.addEventListener('click', enviarWhatsApp);
 
 listaHistorial.addEventListener('click', (evento) => {
   const boton = evento.target.closest('[data-accion]');
