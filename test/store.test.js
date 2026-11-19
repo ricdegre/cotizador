@@ -254,3 +254,48 @@ test('si getItem lanza un error, da valores por defecto', () => {
   assert.equal(store.leerCotizacion(1), null);
   assert.deepEqual(store.listarServicios(), []);
 });
+
+
+test('guardarCliente guarda nombre y teléfono', () => {
+  const store = crearStore(almacenFalso());
+  assert.deepEqual(store.guardarCliente({ nombre: 'Ana', telefono: '555' }), {
+    nombre: 'Ana',
+    telefono: '555',
+  });
+  assert.deepEqual(store.listarClientes(), [{ nombre: 'Ana', telefono: '555' }]);
+});
+
+test('guardarCliente actualiza el teléfono si el nombre ya existe', () => {
+  const store = crearStore(almacenFalso());
+  store.guardarCliente({ nombre: 'Ana', telefono: '111' });
+  store.guardarCliente({ nombre: '  ANA ', telefono: '222' });
+  assert.deepEqual(store.listarClientes(), [{ nombre: 'ANA', telefono: '222' }]);
+});
+
+test('guardarCliente sin nombre no guarda nada', () => {
+  const store = crearStore(almacenFalso());
+  assert.equal(store.guardarCliente({ nombre: '   ', telefono: '555' }), null);
+  assert.equal(store.guardarCliente(undefined), null);
+  assert.deepEqual(store.listarClientes(), []);
+});
+
+test('listarClientes ordena por nombre', () => {
+  const store = crearStore(almacenFalso());
+  store.guardarCliente({ nombre: 'Zoe', telefono: '3' });
+  store.guardarCliente({ nombre: 'ana', telefono: '1' });
+  store.guardarCliente({ nombre: 'Luis', telefono: '2' });
+  assert.deepEqual(
+    store.listarClientes().map((cliente) => cliente.nombre),
+    ['ana', 'Luis', 'Zoe'],
+  );
+});
+
+test('borrarCliente borra por nombre y avisa si no existía', () => {
+  const store = crearStore(almacenFalso());
+  store.guardarCliente({ nombre: 'Ana', telefono: '111' });
+  store.guardarCliente({ nombre: 'Luis', telefono: '222' });
+  assert.equal(store.borrarCliente('  ANA '), true);
+  assert.deepEqual(store.listarClientes(), [{ nombre: 'Luis', telefono: '222' }]);
+  assert.equal(store.borrarCliente('Ana'), false);
+  assert.equal(store.borrarCliente(''), false);
+});

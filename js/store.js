@@ -6,6 +6,7 @@
 const CLAVES = {
   negocio: 'cotiza.negocio',
   cotizaciones: 'cotiza.cotizaciones',
+  clientes: 'cotiza.clientes',
   servicios: 'cotiza.servicios',
   ultimoNumero: 'cotiza.ultimoNumero',
 };
@@ -58,6 +59,19 @@ function claveServicio(descripcion) {
   return texto(descripcion).trim().toLowerCase();
 }
 
+function normalizarCliente(cliente) {
+  const origen = esObjeto(cliente) ? cliente : {};
+  return {
+    nombre: texto(origen.nombre).trim(),
+    telefono: texto(origen.telefono).trim(),
+  };
+}
+
+// "  Ana " y "ana" son el mismo cliente.
+function claveCliente(nombre) {
+  return texto(nombre).trim().toLowerCase();
+}
+
 export function crearStore(almacen) {
   function leer(clave, porDefecto) {
     try {
@@ -80,6 +94,12 @@ export function crearStore(almacen) {
     return lista
       .filter((cotizacion) => esObjeto(cotizacion) && numeroValido(cotizacion.numero))
       .map((cotizacion) => ({ ...cotizacion, numero: numeroValido(cotizacion.numero) }));
+  }
+
+  function leerClientes() {
+    const lista = leer(CLAVES.clientes, []);
+    if (!Array.isArray(lista)) return [];
+    return lista.map(normalizarCliente).filter((cliente) => cliente.nombre);
   }
 
   function leerServicios() {
@@ -138,6 +158,37 @@ export function crearStore(almacen) {
       const resto = lista.filter((cotizacion) => cotizacion.numero !== buscado);
       if (resto.length === lista.length) return false;
       escribir(CLAVES.cotizaciones, resto);
+      return true;
+    },
+
+    // Por nombre, sin distinguir mayúsculas al ordenar.
+    listarClientes() {
+      return leerClientes().sort((a, b) =>
+        a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' }),
+      );
+    },
+
+    // Reemplaza el cliente con el mismo nombre. Sin nombre -> null.
+    guardarCliente(cliente) {
+      const limpio = normalizarCliente(cliente);
+      if (!limpio.nombre) return null;
+      const lista = leerClientes();
+      const indice = lista.findIndex(
+        (guardado) => claveCliente(guardado.nombre) === claveCliente(limpio.nombre),
+      );
+      if (indice >= 0) lista[indice] = limpio;
+      else lista.push(limpio);
+      escribir(CLAVES.clientes, lista);
+      return { ...limpio };
+    },
+
+    // true si se borró, false si no existía.
+    borrarCliente(nombre) {
+      const buscado = claveCliente(nombre);
+      const lista = leerClientes();
+      const resto = lista.filter((cliente) => claveCliente(cliente.nombre) !== buscado);
+      if (!buscado || resto.length === lista.length) return false;
+      escribir(CLAVES.clientes, resto);
       return true;
     },
 

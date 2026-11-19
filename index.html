@@ -24,7 +24,8 @@
           <legend>Cliente</legend>
           <div class="campo">
             <label for="cliente-nombre">Nombre</label>
-            <input id="cliente-nombre" name="clienteNombre" type="text">
+            <input id="cliente-nombre" name="clienteNombre" type="text" list="clientes-sugeridos">
+            <datalist id="clientes-sugeridos"></datalist>
           </div>
           <div class="campo">
             <label for="cliente-telefono">Teléfono</label>
@@ -129,6 +130,20 @@
         <button type="submit">Guardar</button>
         <p id="negocio-estado" class="aviso" role="status"></p>
       </form>
+
+      <h3 id="titulo-clientes" class="titulo-servicios">Clientes</h3>
+
+      <p id="clientes-vacio" class="vacio">Todavía no hay clientes guardados.</p>
+      <ul id="lista-clientes" class="servicios" aria-labelledby="titulo-clientes"></ul>
+      <p id="clientes-estado" class="aviso" role="status"></p>
+
+      <template id="plantilla-cliente">
+        <li class="servicio-guardado cliente-guardado">
+          <p class="servicio-descripcion" data-dato="nombre"></p>
+          <p class="servicio-precio" data-dato="telefono"></p>
+          <button type="button" class="boton-peligro" data-accion="borrar">Borrar</button>
+        </li>
+      </template>
 
       <h3 id="titulo-servicios" class="titulo-servicios">Servicios guardados</h3>
 

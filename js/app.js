@@ -37,6 +37,13 @@ const formularioNegocio = document.getElementById('form-negocio');
 const estadoNegocio = document.getElementById('negocio-estado');
 const dialogoBorrar = document.getElementById('confirmar-borrado');
 const textoBorrar = document.getElementById('confirmar-texto');
+const nombreCliente = formulario.elements.clienteNombre;
+const telefonoCliente = formulario.elements.clienteTelefono;
+const sugerenciasClientes = document.getElementById('clientes-sugeridos');
+const listaClientes = document.getElementById('lista-clientes');
+const plantillaCliente = document.getElementById('plantilla-cliente');
+const clientesVacio = document.getElementById('clientes-vacio');
+const estadoClientes = document.getElementById('clientes-estado');
 
 // Para dar a cada campo de línea un id único, aunque se quiten líneas.
 let siguienteLinea = 1;
@@ -176,11 +183,14 @@ function llenarFormulario(cotizacion) {
 function guardarCotizacion() {
   let guardada;
   try {
-    guardada = store.guardarCotizacion({ ...leerFormulario(), ...abierta });
+    const cotizacion = leerFormulario();
+    store.guardarCliente(cotizacion.cliente);
+    guardada = store.guardarCotizacion({ ...cotizacion, ...abierta });
   } catch {
     estadoCotizacion.textContent = 'No se pudo guardar. Revisa que el navegador permita guardar datos.';
     return;
   }
+  mostrarClientes();
   abierta = { numero: guardada.numero, fecha: guardada.fecha };
   mostrarNumero();
   estadoCotizacion.textContent = `Cotización n.º ${guardada.numero} guardada.`;
@@ -342,6 +352,10 @@ function mostrarSeccion(id) {
     mostrarHistorial();
     estadoHistorial.textContent = '';
   }
+  if (id === 'negocio') {
+    mostrarClientes();
+    estadoClientes.textContent = '';
+  }
   for (const boton of botonesSeccion) {
     const activa = boton.dataset.seccion === id;
     document.getElementById(boton.dataset.seccion).hidden = !activa;
@@ -402,6 +416,65 @@ formularioNegocio.addEventListener('submit', (evento) => {
 // Al cambiar algo, el aviso de "guardados" ya no vale.
 formularioNegocio.addEventListener('input', () => {
   estadoNegocio.textContent = '';
+});
+
+// Clientes guardados. Se sugieren en la cotización y, al elegir uno,
+// se rellena su teléfono.
+
+let clientes = [];
+
+function mostrarClientes() {
+  clientes = store.listarClientes();
+  const filas = clientes.map((cliente) => {
+    const fila = plantillaCliente.content.firstElementChild.cloneNode(true);
+    fila.dataset.nombre = cliente.nombre;
+    dato(fila, 'nombre').textContent = cliente.nombre;
+    dato(fila, 'telefono').textContent = cliente.telefono || 'Sin teléfono';
+    const boton = fila.querySelector('[data-accion="borrar"]');
+    boton.setAttribute('aria-label', `Borrar cliente ${cliente.nombre}`);
+    return fila;
+  });
+  listaClientes.replaceChildren(...filas);
+  clientesVacio.hidden = filas.length > 0;
+
+  const opciones = clientes.map((cliente) => {
+    const opcion = document.createElement('option');
+    opcion.value = cliente.nombre;
+    return opcion;
+  });
+  sugerenciasClientes.replaceChildren(...opciones);
+}
+
+function buscarCliente(nombre) {
+  const clave = aTexto(nombre).trim().toLowerCase();
+  if (!clave) return undefined;
+  return clientes.find((cliente) => cliente.nombre.toLowerCase() === clave);
+}
+
+async function borrarCliente(nombre) {
+  if (!(await confirmarBorrado(`¿Borrar el cliente "${nombre}"?`))) return;
+  let borrado;
+  try {
+    borrado = store.borrarCliente(nombre);
+  } catch {
+    estadoClientes.textContent = 'No se pudo borrar. Revisa que el navegador permita guardar datos.';
+    return;
+  }
+  mostrarClientes();
+  estadoClientes.textContent = borrado
+    ? `Cliente "${nombre}" borrado.`
+    : 'Ese cliente ya no existía.';
+}
+
+nombreCliente.addEventListener('input', () => {
+  const cliente = buscarCliente(nombreCliente.value);
+  if (cliente) telefonoCliente.value = cliente.telefono;
+});
+
+listaClientes.addEventListener('click', (evento) => {
+  const boton = evento.target.closest('[data-accion="borrar"]');
+  if (!boton) return;
+  borrarCliente(boton.closest('.cliente-guardado').dataset.nombre);
 });
 
 // Servicios guardados en "Mi negocio". Se sugieren en la descripción de
@@ -526,6 +599,7 @@ listaServicios.addEventListener('click', (evento) => {
 });
 
 mostrarNegocio();
+mostrarClientes();
 mostrarServicios();
 mostrarNumero();
 anadirLinea();
