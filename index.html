@@ -63,7 +63,7 @@
         <li class="linea">
           <div class="campo linea-descripcion">
             <label data-para="descripcion">Descripción</label>
-            <input type="text" data-campo="descripcion">
+            <input type="text" data-campo="descripcion" list="servicios-sugeridos">
           </div>
           <div class="campo">
             <label data-para="cantidad">Cantidad</label>
@@ -76,6 +76,9 @@
           <button type="button" class="boton-peligro quitar-linea">Quitar línea</button>
         </li>
       </template>
+
+      <!-- Sugerencias para la descripción de cada línea: los servicios guardados. -->
+      <datalist id="servicios-sugeridos"></datalist>
     </section>
 
     <section id="historial" aria-labelledby="titulo-historial" hidden>
@@ -126,6 +129,32 @@
         <button type="submit">Guardar</button>
         <p id="negocio-estado" class="aviso" role="status"></p>
       </form>
+
+      <h3 id="titulo-servicios" class="titulo-servicios">Servicios guardados</h3>
+
+      <p id="servicios-vacio" class="vacio">Todavía no hay servicios guardados.</p>
+      <ul id="lista-servicios" class="servicios" aria-labelledby="titulo-servicios"></ul>
+
+      <form id="form-servicio" autocomplete="off">
+        <div class="campo">
+          <label for="servicio-descripcion">Descripción del servicio</label>
+          <input id="servicio-descripcion" name="descripcion" type="text">
+        </div>
+        <div class="campo">
+          <label for="servicio-precio">Precio</label>
+          <input id="servicio-precio" name="precio" type="text" inputmode="decimal" placeholder="0.00">
+        </div>
+        <button type="submit">Añadir servicio</button>
+        <p id="servicios-estado" class="aviso" role="status"></p>
+      </form>
+
+      <template id="plantilla-servicio">
+        <li class="servicio-guardado">
+          <p class="servicio-descripcion" data-dato="descripcion"></p>
+          <p class="servicio-precio" data-dato="precio"></p>
+          <button type="button" class="boton-peligro" data-accion="borrar">Borrar</button>
+        </li>
+      </template>
     </section>
   </main>
 

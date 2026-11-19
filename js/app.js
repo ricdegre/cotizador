@@ -404,6 +404,113 @@ formularioNegocio.addEventListener('input', () => {
   estadoNegocio.textContent = '';
 });
 
+// Servicios guardados en "Mi negocio". Se sugieren en la descripción de
+// cada línea y, al elegir uno, se pone su precio.
+
+const listaServicios = document.getElementById('lista-servicios');
+const plantillaServicio = document.getElementById('plantilla-servicio');
+const serviciosVacio = document.getElementById('servicios-vacio');
+const estadoServicios = document.getElementById('servicios-estado');
+const formularioServicio = document.getElementById('form-servicio');
+const sugerencias = document.getElementById('servicios-sugeridos');
+
+// Los servicios como los da store.js, para buscar el precio al escribir.
+let servicios = [];
+
+// Arma la lista de "Mi negocio" y las sugerencias de las líneas.
+function mostrarServicios() {
+  servicios = store.listarServicios();
+  const filas = servicios.map((servicio) => {
+    const fila = plantillaServicio.content.firstElementChild.cloneNode(true);
+    fila.dataset.descripcion = servicio.descripcion;
+    dato(fila, 'descripcion').textContent = servicio.descripcion;
+    dato(fila, 'precio').textContent = formatoDinero(servicio.precio);
+    const boton = fila.querySelector('[data-accion="borrar"]');
+    boton.setAttribute('aria-label', `Borrar servicio ${servicio.descripcion}`);
+    return fila;
+  });
+  listaServicios.replaceChildren(...filas);
+  serviciosVacio.hidden = filas.length > 0;
+
+  const opciones = servicios.map((servicio) => {
+    const opcion = document.createElement('option');
+    opcion.value = servicio.descripcion;
+    return opcion;
+  });
+  sugerencias.replaceChildren(...opciones);
+}
+
+// Como en store.js: "  Cambio de Llave " y "cambio de llave" son el mismo.
+function buscarServicio(descripcion) {
+  const clave = aTexto(descripcion).trim().toLowerCase();
+  if (!clave) return undefined;
+  return servicios.find((servicio) => servicio.descripcion.toLowerCase() === clave);
+}
+
+function anadirServicio() {
+  const campos = formularioServicio.elements;
+  let guardado;
+  try {
+    guardado = store.guardarServicio({
+      descripcion: campos.descripcion.value,
+      precio: aCentavos(campos.precio.value),
+    });
+  } catch {
+    estadoServicios.textContent = 'No se pudo guardar. Revisa que el navegador permita guardar datos.';
+    return;
+  }
+  if (!guardado) {
+    estadoServicios.textContent = 'Escribe la descripción del servicio.';
+    campos.descripcion.focus();
+    return;
+  }
+  mostrarServicios();
+  formularioServicio.reset();
+  campos.descripcion.focus();
+  estadoServicios.textContent = `Servicio "${guardado.descripcion}" guardado.`;
+}
+
+async function borrarServicio(descripcion) {
+  if (!(await confirmarBorrado(`¿Borrar el servicio "${descripcion}"?`))) return;
+  let borrado;
+  try {
+    borrado = store.borrarServicio(descripcion);
+  } catch {
+    estadoServicios.textContent = 'No se pudo borrar. Revisa que el navegador permita guardar datos.';
+    return;
+  }
+  mostrarServicios();
+  formularioServicio.elements.descripcion.focus();
+  estadoServicios.textContent = borrado
+    ? `Servicio "${descripcion}" borrado.`
+    : 'Ese servicio ya no existía.';
+}
+
+// Al elegir (o escribir) un servicio guardado en la descripción, se pone su
+// precio. Va en la lista de líneas para que ocurra antes de recalcular.
+listaLineas.addEventListener('input', (evento) => {
+  const entrada = evento.target;
+  if (entrada.dataset?.campo !== 'descripcion') return;
+  const servicio = buscarServicio(entrada.value);
+  if (servicio) campo(entrada.closest('.linea'), 'precio').value = precioTexto(servicio.precio);
+});
+
+formularioServicio.addEventListener('submit', (evento) => {
+  evento.preventDefault();
+  anadirServicio();
+});
+
+formularioServicio.addEventListener('input', () => {
+  estadoServicios.textContent = '';
+});
+
+listaServicios.addEventListener('click', (evento) => {
+  const boton = evento.target.closest('[data-accion="borrar"]');
+  if (!boton) return;
+  borrarServicio(boton.closest('.servicio-guardado').dataset.descripcion);
+});
+
 mostrarNegocio();
+mostrarServicios();
 mostrarNumero();
 anadirLinea();

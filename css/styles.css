@@ -383,3 +383,43 @@ button:disabled {
 .hoja {
   display: none;
 }
+
+/* Servicios guardados */
+
+.titulo-servicios {
+  margin: 2rem 0 1rem;
+  font-size: 1.125rem;
+  color: var(--color-principal);
+}
+
+.servicios {
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.servicio-guardado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 0.75rem;
+  padding: 0.75rem;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+
+.servicio-guardado p {
+  margin: 0;
+}
+
+.servicio-descripcion {
+  flex: 1 1 10rem;
+  font-weight: 600;
+}
+
+.servicio-precio {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
