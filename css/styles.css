@@ -1,0 +1,203 @@
+/* Estilos de pantalla. Primero para teléfono; en pantallas anchas se centra. */
+
+:root {
+  --color-principal: #1e3a5f;
+  --color-principal-oscuro: #152a45;
+  --color-principal-claro: #e6edf5;
+  --color-fondo: #f4f6f9;
+  --color-superficie: #ffffff;
+  --color-texto: #1f2933;
+  --color-texto-suave: #5b6675;
+  --color-borde: #cfd6df;
+  --color-peligro: #b42318;
+  --radio: 0.5rem;
+  --alto-boton: 3rem;
+  --alto-barra: 4rem;
+  --ancho-maximo: 40rem;
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  /* Deja espacio para la barra inferior fija. */
+  padding-bottom: calc(var(--alto-barra) + env(safe-area-inset-bottom));
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  color: var(--color-texto);
+  background: var(--color-fondo);
+}
+
+/* Encabezado */
+
+.encabezado {
+  padding: calc(0.75rem + env(safe-area-inset-top)) 1rem 0.75rem;
+  color: #fff;
+  background: var(--color-principal);
+}
+
+.encabezado h1 {
+  max-width: var(--ancho-maximo);
+  margin: 0 auto;
+  font-size: 1.25rem;
+}
+
+/* Contenido */
+
+main {
+  max-width: var(--ancho-maximo);
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+h2 {
+  margin: 0 0 1rem;
+  font-size: 1.375rem;
+  color: var(--color-principal);
+}
+
+/* Formularios. Letra de 16px o más para que el teléfono no haga zoom. */
+
+label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  min-height: var(--alto-boton);
+  padding: 0.5rem 0.75rem;
+  font: inherit;
+  color: inherit;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+
+textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
+
+/* Botones grandes, fáciles de tocar. */
+
+button {
+  min-height: var(--alto-boton);
+  padding: 0.75rem 1.25rem;
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: var(--color-principal);
+  border: 1px solid var(--color-principal);
+  border-radius: var(--radio);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+button:hover {
+  background: var(--color-principal-oscuro);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.boton-secundario {
+  color: var(--color-principal);
+  background: var(--color-superficie);
+}
+
+.boton-secundario:hover {
+  background: var(--color-principal-claro);
+}
+
+.boton-peligro {
+  color: var(--color-peligro);
+  background: var(--color-superficie);
+  border-color: var(--color-peligro);
+}
+
+.boton-peligro:hover {
+  background: #fdecea;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-principal);
+  outline-offset: 2px;
+}
+
+/* Pie */
+
+.pie {
+  padding: 1.5rem 1rem;
+  font-size: 0.9375rem;
+  text-align: center;
+  color: var(--color-texto-suave);
+}
+
+.pie p {
+  margin: 0;
+}
+
+.pie a {
+  color: var(--color-principal);
+}
+
+/* Barra inferior para cambiar de sección */
+
+.barra {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 0 max(0px, calc((100% - var(--ancho-maximo)) / 2)) env(safe-area-inset-bottom);
+  background: var(--color-principal);
+  box-shadow: 0 -1px 4px rgba(0, 0, 0, 0.15);
+}
+
+.barra button {
+  min-height: var(--alto-barra);
+  padding: 0.5rem;
+  color: rgba(255, 255, 255, 0.75);
+  background: transparent;
+  border: 0;
+  border-top: 3px solid transparent;
+  border-radius: 0;
+}
+
+.barra button:hover {
+  color: #fff;
+  background: var(--color-principal-oscuro);
+}
+
+.barra button[aria-current='page'] {
+  color: #fff;
+  background: var(--color-principal-oscuro);
+  border-top-color: #fff;
+}
+
+.barra button:focus-visible {
+  outline-color: #fff;
+  outline-offset: -4px;
+}
