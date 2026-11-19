@@ -1,0 +1,19 @@
+{
+  "name": "Cotiza Rápido",
+  "short_name": "Cotiza Rápido",
+  "description": "Cotizaciones rápidas desde el teléfono. Hecho por IngenioTech.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "theme_color": "#1e3a5f",
+  "background_color": "#1e3a5f",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

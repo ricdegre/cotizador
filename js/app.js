@@ -603,3 +603,13 @@ mostrarClientes();
 mostrarServicios();
 mostrarNumero();
 anadirLinea();
+
+// Para instalar la app y usarla sin Internet. sw.js se busca junto a
+// index.html, así funciona también publicada en una subcarpeta.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register(new URL('../sw.js', import.meta.url)).catch(() => {
+      // Sin service worker la app sigue funcionando, solo que necesita red.
+    });
+  });
+}

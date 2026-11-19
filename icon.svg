@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Fondo completo para que sirva como icono "maskable"; la hoja queda en la zona segura del centro. -->
+  <rect width="512" height="512" fill="#1e3a5f"/>
+  <path d="M176 146 H296 L336 186 V366 H176 Z" fill="#ffffff"/>
+  <path d="M296 146 V186 H336 Z" fill="#cfd6df"/>
+  <text x="256" y="262" fill="#1e3a5f" font-family="system-ui, 'Segoe UI', Roboto, Arial, sans-serif" font-size="150" font-weight="700" text-anchor="middle" dominant-baseline="central">$</text>
+</svg>
