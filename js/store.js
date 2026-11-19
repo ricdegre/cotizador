@@ -34,9 +34,11 @@ function noNegativo(valor) {
 
 function normalizarNegocio(negocio) {
   const origen = esObjeto(negocio) ? negocio : {};
+  const codigoPais = texto(origen.codigoPais).replace(/\D/g, '') || '1';
   return {
     nombre: texto(origen.nombre),
     telefono: texto(origen.telefono),
+    codigoPais,
     impuesto: noNegativo(origen.impuesto),
     nota: texto(origen.nota),
   };

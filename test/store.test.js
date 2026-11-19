@@ -28,7 +28,7 @@ function estropear(almacen, texto) {
   for (const clave of almacen.datos.keys()) almacen.datos.set(clave, texto);
 }
 
-const negocioVacio = { nombre: '', telefono: '', impuesto: 0, nota: '' };
+const negocioVacio = { nombre: '', telefono: '', codigoPais: '1', impuesto: 0, nota: '' };
 
 test('leerNegocio sin datos da valores por defecto', () => {
   const store = crearStore(almacenFalso());
@@ -40,6 +40,7 @@ test('guardarNegocio guarda y leerNegocio lo recupera', () => {
   const negocio = {
     nombre: 'Plomería Ruiz',
     telefono: '555 123 4567',
+    codigoPais: '52',
     impuesto: 16,
     nota: 'Válida por 15 días',
   };
@@ -55,6 +56,10 @@ test('guardarNegocio limpia campos inválidos y extra', () => {
   assert.equal(store.leerNegocio().impuesto, 10.5);
   store.guardarNegocio({ impuesto: -3 });
   assert.equal(store.leerNegocio().impuesto, 0);
+  store.guardarNegocio({ codigoPais: '+52 abc' });
+  assert.equal(store.leerNegocio().codigoPais, '52');
+  store.guardarNegocio({ codigoPais: '' });
+  assert.equal(store.leerNegocio().codigoPais, '1');
 });
 
 test('sin cotizaciones: lista vacía y leerCotizacion da null', () => {

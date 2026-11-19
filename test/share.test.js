@@ -5,6 +5,7 @@ import { textoCotizacion, enlaceWhatsApp } from '../js/share.js';
 const negocio = {
   nombre: 'Plomería Ruiz',
   telefono: '555 123 4567',
+  codigoPais: '1',
   impuesto: 16,
   nota: 'Válida por 15 días',
 };
@@ -63,28 +64,47 @@ test('textoCotizacion no falla con datos incompletos', () => {
   );
 });
 
-test('enlaceWhatsApp deja solo los dígitos del teléfono', () => {
-  assert.equal(enlaceWhatsApp('+52 55-1234-5678', 'Hola'), 'https://wa.me/525512345678?text=Hola');
-  assert.equal(enlaceWhatsApp('(555) 123 - 4567', 'Hola'), 'https://wa.me/5551234567?text=Hola');
+test('enlaceWhatsApp conserva los dígitos si el teléfono empieza con +', () => {
+  assert.equal(
+    enlaceWhatsApp('+52 55-1234-5678', 'Hola', '1'),
+    'https://wa.me/525512345678?text=Hola',
+  );
+});
+
+test('enlaceWhatsApp antepone el código de país a teléfonos de hasta 10 dígitos', () => {
+  assert.equal(
+    enlaceWhatsApp('(555) 010-2430', 'Hola', '1'),
+    'https://wa.me/15550102430?text=Hola',
+  );
+});
+
+test('enlaceWhatsApp no antepone el código a teléfonos con más de 10 dígitos', () => {
+  assert.equal(
+    enlaceWhatsApp('52 55-1234-5678', 'Hola', '1'),
+    'https://wa.me/525512345678?text=Hola',
+  );
 });
 
 test('enlaceWhatsApp sin teléfono no pone número', () => {
-  assert.equal(enlaceWhatsApp('', 'Hola mundo'), 'https://wa.me/?text=Hola%20mundo');
-  assert.equal(enlaceWhatsApp(undefined, 'Hola mundo'), 'https://wa.me/?text=Hola%20mundo');
-  assert.equal(enlaceWhatsApp(' - ', 'Hola mundo'), 'https://wa.me/?text=Hola%20mundo');
+  assert.equal(enlaceWhatsApp('', 'Hola mundo', '1'), 'https://wa.me/?text=Hola%20mundo');
+  assert.equal(enlaceWhatsApp(undefined, 'Hola mundo', '1'), 'https://wa.me/?text=Hola%20mundo');
+  assert.equal(enlaceWhatsApp(' - ', 'Hola mundo', '1'), 'https://wa.me/?text=Hola%20mundo');
 });
 
 test('enlaceWhatsApp codifica acentos, saltos de línea y símbolos', () => {
   assert.equal(
-    enlaceWhatsApp('555', 'Cotización n.º 1\nVálida'),
-    'https://wa.me/555?text=Cotizaci%C3%B3n%20n.%C2%BA%201%0AV%C3%A1lida',
+    enlaceWhatsApp('555', 'Cotización n.º 1\nVálida', '1'),
+    'https://wa.me/1555?text=Cotizaci%C3%B3n%20n.%C2%BA%201%0AV%C3%A1lida',
   );
-  assert.equal(enlaceWhatsApp('555', 'A & B = $5'), 'https://wa.me/555?text=A%20%26%20B%20%3D%20%245');
+  assert.equal(
+    enlaceWhatsApp('555', 'A & B = $5', '1'),
+    'https://wa.me/1555?text=A%20%26%20B%20%3D%20%245',
+  );
 });
 
 test('el texto de la cotización llega igual dentro del enlace', () => {
   const texto = textoCotizacion(cotizacion, negocio);
-  const enlace = enlaceWhatsApp(cotizacion.cliente.telefono, texto);
-  assert.ok(enlace.startsWith('https://wa.me/5512345678?text='));
+  const enlace = enlaceWhatsApp(cotizacion.cliente.telefono, texto, negocio.codigoPais);
+  assert.ok(enlace.startsWith('https://wa.me/15512345678?text='));
   assert.equal(new URL(enlace).searchParams.get('text'), texto);
 });

@@ -54,9 +54,15 @@ export function textoCotizacion(cotizacion, negocio) {
   return partes.join('\n\n');
 }
 
-// "+52 55-1234-5678" -> "https://wa.me/525512345678?text=...".
+// "+52 55-1234-5678" conserva sus dígitos. A un número nacional de
+// hasta 10 dígitos se le antepone el código de país.
 // Sin teléfono, WhatsApp deja elegir a quién enviarlo.
-export function enlaceWhatsApp(telefono, texto) {
-  const digitos = String(telefono ?? '').replace(/\D/g, '');
-  return `https://wa.me/${digitos}?text=${encodeURIComponent(String(texto ?? ''))}`;
+export function enlaceWhatsApp(telefono, texto, codigoPais = '1') {
+  const original = String(telefono ?? '').trim();
+  const digitos = original.replace(/\D/g, '');
+  const codigo = String(codigoPais ?? '').replace(/\D/g, '') || '1';
+  const destino = digitos && !original.startsWith('+') && digitos.length <= 10
+    ? `${codigo}${digitos}`
+    : digitos;
+  return `https://wa.me/${destino}?text=${encodeURIComponent(String(texto ?? ''))}`;
 }
