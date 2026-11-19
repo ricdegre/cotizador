@@ -17,6 +17,55 @@
   <main>
     <section id="cotizacion" aria-labelledby="titulo-cotizacion">
       <h2 id="titulo-cotizacion">Cotización</h2>
+
+      <form id="form-cotizacion" autocomplete="off">
+        <fieldset class="grupo">
+          <legend>Cliente</legend>
+          <div class="campo">
+            <label for="cliente-nombre">Nombre</label>
+            <input id="cliente-nombre" name="clienteNombre" type="text">
+          </div>
+          <div class="campo">
+            <label for="cliente-telefono">Teléfono</label>
+            <input id="cliente-telefono" name="clienteTelefono" type="tel" inputmode="tel">
+          </div>
+        </fieldset>
+
+        <fieldset class="grupo">
+          <legend>Líneas</legend>
+          <ul id="lineas" class="lineas"></ul>
+          <button type="button" id="anadir-linea" class="boton-secundario">Añadir línea</button>
+        </fieldset>
+
+        <div class="campo">
+          <label for="notas">Notas</label>
+          <textarea id="notas" name="notas"></textarea>
+        </div>
+
+        <dl class="totales">
+          <div><dt>Subtotal</dt><dd id="total-subtotal">$0.00</dd></div>
+          <div><dt>Impuesto</dt><dd id="total-impuesto">$0.00</dd></div>
+          <div class="total-final"><dt>Total</dt><dd id="total-total">$0.00</dd></div>
+        </dl>
+      </form>
+
+      <template id="plantilla-linea">
+        <li class="linea">
+          <div class="campo linea-descripcion">
+            <label data-para="descripcion">Descripción</label>
+            <input type="text" data-campo="descripcion">
+          </div>
+          <div class="campo">
+            <label data-para="cantidad">Cantidad</label>
+            <input type="text" inputmode="decimal" value="1" data-campo="cantidad">
+          </div>
+          <div class="campo">
+            <label data-para="precio">Precio</label>
+            <input type="text" inputmode="decimal" placeholder="0.00" data-campo="precio">
+          </div>
+          <button type="button" class="boton-peligro quitar-linea">Quitar línea</button>
+        </li>
+      </template>
     </section>
 
     <section id="historial" aria-labelledby="titulo-historial" hidden>
