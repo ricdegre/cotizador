@@ -28,7 +28,7 @@ function estropear(almacen, texto) {
   for (const clave of almacen.datos.keys()) almacen.datos.set(clave, texto);
 }
 
-const negocioVacio = { nombre: '', telefono: '', codigoPais: '1', impuesto: 0, nota: '' };
+const negocioVacio = { nombre: '', telefono: '', codigoPais: '1', impuesto: 0, nota: '', idioma: 'es' };
 
 test('leerNegocio sin datos da valores por defecto', () => {
   const store = crearStore(almacenFalso());
@@ -43,9 +43,42 @@ test('guardarNegocio guarda y leerNegocio lo recupera', () => {
     codigoPais: '52',
     impuesto: 16,
     nota: 'Válida por 15 días',
+    idioma: 'es',
   };
   crearStore(almacen).guardarNegocio(negocio);
   assert.deepEqual(crearStore(almacen).leerNegocio(), negocio);
+});
+
+test('guardarNegocio guarda el idioma y leerNegocio lo recupera', () => {
+  const almacen = almacenFalso();
+  assert.equal(crearStore(almacen).guardarNegocio({ nombre: 'Jardines', idioma: 'en' }).idioma, 'en');
+  assert.deepEqual(crearStore(almacen).leerNegocio(), {
+    ...negocioVacio,
+    nombre: 'Jardines',
+    idioma: 'en',
+  });
+  assert.equal(JSON.parse(almacen.getItem('cotiza.negocio')).idioma, 'en');
+});
+
+test('sin idioma el negocio queda en español', () => {
+  const almacen = almacenFalso();
+  const store = crearStore(almacen);
+  assert.equal(store.guardarNegocio({ nombre: 'Jardines' }).idioma, 'es');
+  assert.equal(store.leerNegocio().idioma, 'es');
+  // Datos guardados antes de que existiera el idioma.
+  almacen.setItem('cotiza.negocio', JSON.stringify({ nombre: 'Jardines', impuesto: 16 }));
+  assert.equal(store.leerNegocio().idioma, 'es');
+});
+
+test('un idioma inválido queda en español', () => {
+  const almacen = almacenFalso();
+  const store = crearStore(almacen);
+  for (const idioma of ['fr', 'EN', ' en', '', 1, null, ['en'], { en: true }]) {
+    assert.equal(store.guardarNegocio({ idioma }).idioma, 'es', String(idioma));
+    assert.equal(store.leerNegocio().idioma, 'es', String(idioma));
+  }
+  almacen.setItem('cotiza.negocio', JSON.stringify({ idioma: 'de' }));
+  assert.equal(store.leerNegocio().idioma, 'es');
 });
 
 test('guardarNegocio limpia campos inválidos y extra', () => {

@@ -3,6 +3,8 @@
 // falso en las pruebas), así no toca la página y se prueba con node --test.
 // Si lo guardado está dañado o vacío, se devuelven valores por defecto.
 
+import { IDIOMAS } from './i18n.js';
+
 const CLAVES = {
   negocio: 'cotiza.negocio',
   cotizaciones: 'cotiza.cotizaciones',
@@ -33,6 +35,11 @@ function noNegativo(valor) {
   return Number.isFinite(numero) && numero >= 0 ? numero : 0;
 }
 
+// Uno de IDIOMAS; cualquier otro valor, o ninguno, -> "es".
+function idiomaValido(valor) {
+  return IDIOMAS.includes(valor) ? valor : 'es';
+}
+
 function normalizarNegocio(negocio) {
   const origen = esObjeto(negocio) ? negocio : {};
   const codigoPais = texto(origen.codigoPais).replace(/\D/g, '') || '1';
@@ -42,6 +49,7 @@ function normalizarNegocio(negocio) {
     codigoPais,
     impuesto: noNegativo(origen.impuesto),
     nota: texto(origen.nota),
+    idioma: idiomaValido(origen.idioma),
   };
 }
 
