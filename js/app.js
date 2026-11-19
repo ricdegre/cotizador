@@ -48,6 +48,7 @@ const listaClientes = document.getElementById('lista-clientes');
 const plantillaCliente = document.getElementById('plantilla-cliente');
 const clientesVacio = document.getElementById('clientes-vacio');
 const estadoClientes = document.getElementById('clientes-estado');
+const selectorIdioma = document.getElementById('negocio-idioma');
 
 // Para dar a cada campo de línea un id único, aunque se quiten líneas.
 let siguienteLinea = 1;
@@ -111,6 +112,8 @@ function guardarNegocio() {
       codigoPais: campos.codigoPais.value,
       impuesto: campos.impuesto.value,
       nota: campos.nota.value.trim(),
+      // El selector está fuera del formulario; sin esto se volvería a "es".
+      idioma,
     });
   } catch {
     estadoNegocio.textContent = 'No se pudo guardar. Revisa que el navegador permita guardar datos.';
@@ -119,6 +122,30 @@ function guardarNegocio() {
   mostrarNegocio();
   recalcular();
   estadoNegocio.textContent = 'Datos guardados.';
+}
+
+// Pone los textos del idioma en lo marcado con data-i18n (el texto),
+// data-i18n-placeholder (el ejemplo) y data-i18n-aria (aria-label).
+function traducir(raiz, lengua) {
+  for (const elemento of raiz.querySelectorAll('[data-i18n]')) {
+    elemento.textContent = t(elemento.dataset.i18n, lengua);
+  }
+  for (const elemento of raiz.querySelectorAll('[data-i18n-placeholder]')) {
+    elemento.placeholder = t(elemento.dataset.i18nPlaceholder, lengua);
+  }
+  for (const elemento of raiz.querySelectorAll('[data-i18n-aria]')) {
+    elemento.setAttribute('aria-label', t(elemento.dataset.i18nAria, lengua));
+  }
+}
+
+// querySelectorAll no entra en las <template>, así que su contenido se
+// traduce aparte; las filas que se creen después ya salen en el idioma.
+function aplicarIdioma(nuevoIdioma) {
+  document.documentElement.lang = nuevoIdioma;
+  traducir(document, nuevoIdioma);
+  for (const plantilla of document.querySelectorAll('template')) {
+    traducir(plantilla.content, nuevoIdioma);
+  }
 }
 
 // Copia la plantilla y une cada etiqueta con su campo por id.
@@ -282,13 +309,19 @@ function mostrarHistorial() {
   const filas = store.listarCotizaciones().map((cotizacion) => {
     const fila = plantillaHistorial.content.firstElementChild.cloneNode(true);
     fila.dataset.numero = String(cotizacion.numero);
-    dato(fila, 'numero').textContent = `N.º ${cotizacion.numero}`;
+    dato(fila, 'numero').textContent = t('historial.numero', idioma, { numero: cotizacion.numero });
     dato(fila, 'fecha').textContent = formatoFecha(cotizacion.fecha);
-    dato(fila, 'cliente').textContent = aTexto(cotizacion.cliente?.nombre).trim() || 'Sin nombre de cliente';
-    dato(fila, 'total').textContent = `Total: ${formatoDinero(total(cotizacion.lineas, negocio.impuesto))}`;
+    dato(fila, 'cliente').textContent =
+      aTexto(cotizacion.cliente?.nombre).trim() || t('historial.sinCliente', idioma);
+    dato(fila, 'total').textContent = t('historial.total', idioma, {
+      total: formatoDinero(total(cotizacion.lineas, negocio.impuesto)),
+    });
     // Cada botón dice a qué cotización se refiere, para lectores de pantalla.
     for (const boton of fila.querySelectorAll('[data-accion]')) {
-      boton.setAttribute('aria-label', `${boton.textContent} cotización ${cotizacion.numero}`);
+      boton.setAttribute(
+        'aria-label',
+        t('historial.accionEtiqueta', idioma, { accion: boton.textContent, numero: cotizacion.numero }),
+      );
     }
     return fila;
   });
@@ -422,6 +455,26 @@ formularioNegocio.addEventListener('input', () => {
   estadoNegocio.textContent = '';
 });
 
+// El idioma se guarda solo, con los datos ya guardados de "Mi negocio"
+// (no con lo que esté a medio escribir en el formulario). Se aplica al
+// momento y se vuelven a armar las filas que ya están en pantalla; las
+// líneas de la cotización se traducen en su sitio, sin perder lo escrito.
+selectorIdioma.addEventListener('change', () => {
+  try {
+    negocio = store.guardarNegocio({ ...negocio, idioma: selectorIdioma.value });
+  } catch {
+    selectorIdioma.value = idioma;
+    estadoNegocio.textContent = 'No se pudo guardar. Revisa que el navegador permita guardar datos.';
+    return;
+  }
+  idioma = negocio.idioma;
+  selectorIdioma.value = idioma;
+  aplicarIdioma(idioma);
+  mostrarHistorial();
+  mostrarClientes();
+  mostrarServicios();
+});
+
 // Clientes guardados. Se sugieren en la cotización y, al elegir uno,
 // se rellena su teléfono.
 
@@ -433,9 +486,9 @@ function mostrarClientes() {
     const fila = plantillaCliente.content.firstElementChild.cloneNode(true);
     fila.dataset.nombre = cliente.nombre;
     dato(fila, 'nombre').textContent = cliente.nombre;
-    dato(fila, 'telefono').textContent = cliente.telefono || 'Sin teléfono';
+    dato(fila, 'telefono').textContent = cliente.telefono || t('clientes.sinTelefono', idioma);
     const boton = fila.querySelector('[data-accion="borrar"]');
-    boton.setAttribute('aria-label', `Borrar cliente ${cliente.nombre}`);
+    boton.setAttribute('aria-label', t('clientes.borrarEtiqueta', idioma, { nombre: cliente.nombre }));
     return fila;
   });
   listaClientes.replaceChildren(...filas);
@@ -503,7 +556,10 @@ function mostrarServicios() {
     dato(fila, 'descripcion').textContent = servicio.descripcion;
     dato(fila, 'precio').textContent = formatoDinero(servicio.precio);
     const boton = fila.querySelector('[data-accion="borrar"]');
-    boton.setAttribute('aria-label', `Borrar servicio ${servicio.descripcion}`);
+    boton.setAttribute(
+      'aria-label',
+      t('servicios.borrarEtiqueta', idioma, { descripcion: servicio.descripcion }),
+    );
     return fila;
   });
   listaServicios.replaceChildren(...filas);
@@ -602,6 +658,8 @@ listaServicios.addEventListener('click', (evento) => {
   borrarServicio(boton.closest('.servicio-guardado').dataset.descripcion);
 });
 
+aplicarIdioma(idioma);
+selectorIdioma.value = idioma;
 mostrarNegocio();
 mostrarClientes();
 mostrarServicios();
