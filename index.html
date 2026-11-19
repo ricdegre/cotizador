@@ -74,6 +74,27 @@
 
     <section id="negocio" aria-labelledby="titulo-negocio" hidden>
       <h2 id="titulo-negocio">Mi negocio</h2>
+
+      <form id="form-negocio" autocomplete="off">
+        <div class="campo">
+          <label for="negocio-nombre">Nombre del negocio</label>
+          <input id="negocio-nombre" name="nombre" type="text">
+        </div>
+        <div class="campo">
+          <label for="negocio-telefono">Teléfono</label>
+          <input id="negocio-telefono" name="telefono" type="tel" inputmode="tel">
+        </div>
+        <div class="campo">
+          <label for="negocio-impuesto">Impuesto (%)</label>
+          <input id="negocio-impuesto" name="impuesto" type="text" inputmode="decimal" placeholder="0">
+        </div>
+        <div class="campo">
+          <label for="negocio-nota">Nota al pie</label>
+          <textarea id="negocio-nota" name="nota" placeholder="Válida por 15 días"></textarea>
+        </div>
+        <button type="submit">Guardar</button>
+        <p id="negocio-estado" class="aviso" role="status"></p>
+      </form>
     </section>
   </main>
 
