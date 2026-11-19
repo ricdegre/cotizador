@@ -487,12 +487,27 @@ async function borrarServicio(descripcion) {
 }
 
 // Al elegir (o escribir) un servicio guardado en la descripción, se pone su
-// precio. Va en la lista de líneas para que ocurra antes de recalcular.
+// precio y se marca como puesto solo. Si luego se vacía la descripción y el
+// precio sigue sin tocar, se quita. Va en la lista de líneas para que ocurra
+// antes de recalcular.
 listaLineas.addEventListener('input', (evento) => {
   const entrada = evento.target;
-  if (entrada.dataset?.campo !== 'descripcion') return;
+  const nombre = entrada.dataset?.campo;
+  // Un precio escrito a mano ya no se quita al vaciar la descripción.
+  if (nombre === 'precio') {
+    delete entrada.dataset.automatico;
+    return;
+  }
+  if (nombre !== 'descripcion') return;
+  const precio = campo(entrada.closest('.linea'), 'precio');
   const servicio = buscarServicio(entrada.value);
-  if (servicio) campo(entrada.closest('.linea'), 'precio').value = precioTexto(servicio.precio);
+  if (servicio) {
+    precio.value = precioTexto(servicio.precio);
+    precio.dataset.automatico = '';
+  } else if (!entrada.value.trim() && 'automatico' in precio.dataset) {
+    precio.value = '';
+    delete precio.dataset.automatico;
+  }
 });
 
 formularioServicio.addEventListener('submit', (evento) => {
