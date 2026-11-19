@@ -29,6 +29,8 @@ const estadoHistorial = document.getElementById('historial-estado');
 const botonesSeccion = document.querySelectorAll('.barra [data-seccion]');
 const formularioNegocio = document.getElementById('form-negocio');
 const estadoNegocio = document.getElementById('negocio-estado');
+const dialogoBorrar = document.getElementById('confirmar-borrado');
+const textoBorrar = document.getElementById('confirmar-texto');
 
 // Para dar a cada campo de línea un id único, aunque se quiten líneas.
 let siguienteLinea = 1;
@@ -229,8 +231,21 @@ function cargarCotizacion(numero, comoNueva) {
   formulario.elements.clienteNombre.focus();
 }
 
-function borrarCotizacion(numero) {
-  if (!window.confirm(`¿Borrar la cotización n.º ${numero}? No se puede deshacer.`)) return;
+// Muestra el cuadro de confirmación; da true solo si se pulsa "Borrar".
+// Escape lo cierra sin cambiar returnValue, así que cuenta como "Cancelar".
+function confirmarBorrado(texto) {
+  textoBorrar.textContent = texto;
+  dialogoBorrar.returnValue = '';
+  dialogoBorrar.showModal();
+  return new Promise((resolver) => {
+    dialogoBorrar.addEventListener('close', () => resolver(dialogoBorrar.returnValue === 'borrar'), {
+      once: true,
+    });
+  });
+}
+
+async function borrarCotizacion(numero) {
+  if (!(await confirmarBorrado(`¿Borrar la cotización n.º ${numero}? No se puede deshacer.`))) return;
   let borrada;
   try {
     borrada = store.borrarCotizacion(numero);

@@ -131,5 +131,15 @@
     <button type="button" data-seccion="historial" aria-controls="historial">Historial</button>
     <button type="button" data-seccion="negocio" aria-controls="negocio">Mi negocio</button>
   </nav>
+
+  <dialog id="confirmar-borrado" class="dialogo" aria-labelledby="confirmar-texto">
+    <form method="dialog">
+      <p id="confirmar-texto" class="dialogo-texto"></p>
+      <div class="acciones">
+        <button type="submit" value="cancelar" class="boton-secundario" autofocus>Cancelar</button>
+        <button type="submit" value="borrar" class="boton-borrar">Borrar</button>
+      </div>
+    </form>
+  </dialog>
 </body>
 </html>
