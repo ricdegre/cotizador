@@ -127,10 +127,14 @@ export const TEXTOS = {
     'whatsapp.subtotal': 'Subtotal: {subtotal}',
     'whatsapp.impuesto': 'Impuesto: {impuesto}',
     'whatsapp.total': 'Total: {total}',
+
+    // Selector de idioma en "Mi negocio"
+    'idioma.etiqueta': 'Idioma / Language',
   },
 
   en: {
     'idioma.nombre': 'English',
+    'idioma.etiqueta': 'Idioma / Language',
     'app.titulo': 'Cotiza Rápido',
     'app.descripcion': 'Quick quotes from your phone. Made by IngenioTech.',
     'pie.texto': 'Made by IngenioTech',

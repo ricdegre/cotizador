@@ -3,11 +3,15 @@
 import { aCentavos, totalLinea, subtotal, impuesto, total, formatoDinero } from './calc.js';
 import { crearStore } from './store.js';
 import { textoCotizacion, enlaceWhatsApp } from './share.js';
+import { t } from './i18n.js';
 
 const store = crearStore(localStorage);
 
 // Datos de "Mi negocio"; su porcentaje de impuesto se usa en los totales.
 let negocio = store.leerNegocio();
+
+// Idioma de la página; se guarda con los datos de "Mi negocio".
+let idioma = negocio.idioma;
 
 // La cotización del formulario: número 0 y sin fecha mientras no se guarde.
 let abierta = { numero: 0, fecha: '' };

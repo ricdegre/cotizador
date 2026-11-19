@@ -14,50 +14,50 @@
 </head>
 <body>
   <header class="encabezado">
-    <h1>Cotiza Rápido</h1>
+    <h1 data-i18n="app.titulo">Cotiza Rápido</h1>
   </header>
 
   <main>
     <section id="cotizacion" aria-labelledby="titulo-cotizacion">
-      <h2 id="titulo-cotizacion">Cotización</h2>
+      <h2 id="titulo-cotizacion" data-i18n="cotizacion.titulo">Cotización</h2>
 
       <form id="form-cotizacion" autocomplete="off">
         <fieldset class="grupo">
-          <legend>Cliente</legend>
+          <legend data-i18n="cotizacion.cliente">Cliente</legend>
           <div class="campo">
-            <label for="cliente-nombre">Nombre</label>
+            <label for="cliente-nombre" data-i18n="cotizacion.clienteNombre">Nombre</label>
             <input id="cliente-nombre" name="clienteNombre" type="text" list="clientes-sugeridos">
             <datalist id="clientes-sugeridos"></datalist>
           </div>
           <div class="campo">
-            <label for="cliente-telefono">Teléfono</label>
+            <label for="cliente-telefono" data-i18n="cotizacion.clienteTelefono">Teléfono</label>
             <input id="cliente-telefono" name="clienteTelefono" type="tel" inputmode="tel">
           </div>
         </fieldset>
 
         <fieldset class="grupo">
-          <legend>Líneas</legend>
+          <legend data-i18n="cotizacion.lineas">Líneas</legend>
           <ul id="lineas" class="lineas"></ul>
-          <button type="button" id="anadir-linea" class="boton-secundario">Añadir línea</button>
+          <button type="button" id="anadir-linea" class="boton-secundario" data-i18n="cotizacion.anadirLinea">Añadir línea</button>
         </fieldset>
 
         <div class="campo">
-          <label for="notas">Notas</label>
+          <label for="notas" data-i18n="cotizacion.notas">Notas</label>
           <textarea id="notas" name="notas"></textarea>
         </div>
 
         <dl class="totales">
-          <div><dt>Subtotal</dt><dd id="total-subtotal">$0.00</dd></div>
-          <div><dt>Impuesto</dt><dd id="total-impuesto">$0.00</dd></div>
-          <div class="total-final"><dt>Total</dt><dd id="total-total">$0.00</dd></div>
+          <div><dt data-i18n="cotizacion.subtotal">Subtotal</dt><dd id="total-subtotal">$0.00</dd></div>
+          <div><dt data-i18n="cotizacion.impuesto">Impuesto</dt><dd id="total-impuesto">$0.00</dd></div>
+          <div class="total-final"><dt data-i18n="cotizacion.total">Total</dt><dd id="total-total">$0.00</dd></div>
         </dl>
 
         <p id="cotizacion-numero" class="numero-cotizacion"></p>
         <div class="acciones">
-          <button type="button" id="guardar-cotizacion">Guardar</button>
-          <button type="button" id="enviar-whatsapp" class="boton-secundario">WhatsApp</button>
-          <button type="button" id="imprimir-cotizacion" class="boton-secundario">Imprimir / PDF</button>
-          <button type="button" id="nueva-cotizacion" class="boton-secundario">Nueva cotización</button>
+          <button type="button" id="guardar-cotizacion" data-i18n="cotizacion.guardar">Guardar</button>
+          <button type="button" id="enviar-whatsapp" class="boton-secundario" data-i18n="cotizacion.whatsapp">WhatsApp</button>
+          <button type="button" id="imprimir-cotizacion" class="boton-secundario" data-i18n="cotizacion.imprimir">Imprimir / PDF</button>
+          <button type="button" id="nueva-cotizacion" class="boton-secundario" data-i18n="cotizacion.nueva">Nueva cotización</button>
         </div>
         <p id="cotizacion-estado" class="aviso" role="status"></p>
       </form>
@@ -65,18 +65,18 @@
       <template id="plantilla-linea">
         <li class="linea">
           <div class="campo linea-descripcion">
-            <label data-para="descripcion">Descripción</label>
+            <label data-para="descripcion" data-i18n="linea.descripcion">Descripción</label>
             <input type="text" data-campo="descripcion" list="servicios-sugeridos">
           </div>
           <div class="campo">
-            <label data-para="cantidad">Cantidad</label>
+            <label data-para="cantidad" data-i18n="linea.cantidad">Cantidad</label>
             <input type="text" inputmode="decimal" value="1" data-campo="cantidad">
           </div>
           <div class="campo">
-            <label data-para="precio">Precio</label>
-            <input type="text" inputmode="decimal" placeholder="0.00" data-campo="precio">
+            <label data-para="precio" data-i18n="linea.precio">Precio</label>
+            <input type="text" inputmode="decimal" placeholder="0.00" data-i18n-placeholder="linea.precioEjemplo" data-campo="precio">
           </div>
-          <button type="button" class="boton-peligro quitar-linea">Quitar línea</button>
+          <button type="button" class="boton-peligro quitar-linea" data-i18n="linea.quitar">Quitar línea</button>
         </li>
       </template>
 
@@ -85,9 +85,9 @@
     </section>
 
     <section id="historial" aria-labelledby="titulo-historial" hidden>
-      <h2 id="titulo-historial">Historial</h2>
+      <h2 id="titulo-historial" data-i18n="historial.titulo">Historial</h2>
 
-      <p id="historial-vacio" class="vacio">Todavía no hay cotizaciones guardadas.</p>
+      <p id="historial-vacio" class="vacio" data-i18n="historial.vacio">Todavía no hay cotizaciones guardadas.</p>
       <ul id="lista-historial" class="historial"></ul>
       <p id="historial-estado" class="aviso" role="status"></p>
 
@@ -97,45 +97,54 @@
           <p data-dato="cliente"></p>
           <p class="cotizacion-total" data-dato="total"></p>
           <div class="acciones">
-            <button type="button" class="boton-secundario" data-accion="abrir">Abrir</button>
-            <button type="button" class="boton-secundario" data-accion="duplicar">Duplicar</button>
-            <button type="button" class="boton-peligro" data-accion="borrar">Borrar</button>
+            <button type="button" class="boton-secundario" data-accion="abrir" data-i18n="historial.abrir">Abrir</button>
+            <button type="button" class="boton-secundario" data-accion="duplicar" data-i18n="historial.duplicar">Duplicar</button>
+            <button type="button" class="boton-peligro" data-accion="borrar" data-i18n="historial.borrar">Borrar</button>
           </div>
         </li>
       </template>
     </section>
 
     <section id="negocio" aria-labelledby="titulo-negocio" hidden>
-      <h2 id="titulo-negocio">Mi negocio</h2>
+      <h2 id="titulo-negocio" data-i18n="negocio.titulo">Mi negocio</h2>
+
+      <!-- Cada idioma se muestra con su propio nombre, sin traducir. -->
+      <div class="campo">
+        <label for="negocio-idioma" data-i18n="idioma.etiqueta">Idioma / Language</label>
+        <select id="negocio-idioma">
+          <option value="es" lang="es">Español</option>
+          <option value="en" lang="en">English</option>
+        </select>
+      </div>
 
       <form id="form-negocio" autocomplete="off">
         <div class="campo">
-          <label for="negocio-nombre">Nombre del negocio</label>
+          <label for="negocio-nombre" data-i18n="negocio.nombre">Nombre del negocio</label>
           <input id="negocio-nombre" name="nombre" type="text">
         </div>
         <div class="campo">
-          <label for="negocio-telefono">Teléfono</label>
+          <label for="negocio-telefono" data-i18n="negocio.telefono">Teléfono</label>
           <input id="negocio-telefono" name="telefono" type="tel" inputmode="tel">
         </div>
         <div class="campo">
-          <label for="negocio-codigo-pais">Código de país</label>
+          <label for="negocio-codigo-pais" data-i18n="negocio.codigoPais">Código de país</label>
           <input id="negocio-codigo-pais" name="codigoPais" type="text" inputmode="numeric" pattern="[0-9]*" value="1">
         </div>
         <div class="campo">
-          <label for="negocio-impuesto">Impuesto (%)</label>
-          <input id="negocio-impuesto" name="impuesto" type="text" inputmode="decimal" placeholder="0">
+          <label for="negocio-impuesto" data-i18n="negocio.impuesto">Impuesto (%)</label>
+          <input id="negocio-impuesto" name="impuesto" type="text" inputmode="decimal" placeholder="0" data-i18n-placeholder="negocio.impuestoEjemplo">
         </div>
         <div class="campo">
-          <label for="negocio-nota">Nota al pie</label>
-          <textarea id="negocio-nota" name="nota" placeholder="Válida por 15 días"></textarea>
+          <label for="negocio-nota" data-i18n="negocio.nota">Nota al pie</label>
+          <textarea id="negocio-nota" name="nota" placeholder="Válida por 15 días" data-i18n-placeholder="negocio.notaEjemplo"></textarea>
         </div>
-        <button type="submit">Guardar</button>
+        <button type="submit" data-i18n="negocio.guardar">Guardar</button>
         <p id="negocio-estado" class="aviso" role="status"></p>
       </form>
 
-      <h3 id="titulo-clientes" class="titulo-servicios">Clientes</h3>
+      <h3 id="titulo-clientes" class="titulo-servicios" data-i18n="clientes.titulo">Clientes</h3>
 
-      <p id="clientes-vacio" class="vacio">Todavía no hay clientes guardados.</p>
+      <p id="clientes-vacio" class="vacio" data-i18n="clientes.vacio">Todavía no hay clientes guardados.</p>
       <ul id="lista-clientes" class="servicios" aria-labelledby="titulo-clientes"></ul>
       <p id="clientes-estado" class="aviso" role="status"></p>
 
@@ -143,25 +152,25 @@
         <li class="servicio-guardado cliente-guardado">
           <p class="servicio-descripcion" data-dato="nombre"></p>
           <p class="servicio-precio" data-dato="telefono"></p>
-          <button type="button" class="boton-peligro" data-accion="borrar">Borrar</button>
+          <button type="button" class="boton-peligro" data-accion="borrar" data-i18n="clientes.borrar">Borrar</button>
         </li>
       </template>
 
-      <h3 id="titulo-servicios" class="titulo-servicios">Servicios guardados</h3>
+      <h3 id="titulo-servicios" class="titulo-servicios" data-i18n="servicios.titulo">Servicios guardados</h3>
 
-      <p id="servicios-vacio" class="vacio">Todavía no hay servicios guardados.</p>
+      <p id="servicios-vacio" class="vacio" data-i18n="servicios.vacio">Todavía no hay servicios guardados.</p>
       <ul id="lista-servicios" class="servicios" aria-labelledby="titulo-servicios"></ul>
 
       <form id="form-servicio" autocomplete="off">
         <div class="campo">
-          <label for="servicio-descripcion">Descripción del servicio</label>
+          <label for="servicio-descripcion" data-i18n="servicios.descripcion">Descripción del servicio</label>
           <input id="servicio-descripcion" name="descripcion" type="text">
         </div>
         <div class="campo">
-          <label for="servicio-precio">Precio</label>
-          <input id="servicio-precio" name="precio" type="text" inputmode="decimal" placeholder="0.00">
+          <label for="servicio-precio" data-i18n="servicios.precio">Precio</label>
+          <input id="servicio-precio" name="precio" type="text" inputmode="decimal" placeholder="0.00" data-i18n-placeholder="servicios.precioEjemplo">
         </div>
-        <button type="submit">Añadir servicio</button>
+        <button type="submit" data-i18n="servicios.anadir">Añadir servicio</button>
         <p id="servicios-estado" class="aviso" role="status"></p>
       </form>
 
@@ -169,28 +178,28 @@
         <li class="servicio-guardado">
           <p class="servicio-descripcion" data-dato="descripcion"></p>
           <p class="servicio-precio" data-dato="precio"></p>
-          <button type="button" class="boton-peligro" data-accion="borrar">Borrar</button>
+          <button type="button" class="boton-peligro" data-accion="borrar" data-i18n="servicios.borrar">Borrar</button>
         </li>
       </template>
     </section>
   </main>
 
   <footer class="pie">
-    <p>Hecho por IngenioTech</p>
+    <p data-i18n="pie.texto">Hecho por IngenioTech</p>
   </footer>
 
-  <nav class="barra" aria-label="Secciones">
-    <button type="button" data-seccion="cotizacion" aria-controls="cotizacion" aria-current="page">Cotización</button>
-    <button type="button" data-seccion="historial" aria-controls="historial">Historial</button>
-    <button type="button" data-seccion="negocio" aria-controls="negocio">Mi negocio</button>
+  <nav class="barra" aria-label="Secciones" data-i18n-aria="barra.etiqueta">
+    <button type="button" data-seccion="cotizacion" aria-controls="cotizacion" aria-current="page" data-i18n="barra.cotizacion">Cotización</button>
+    <button type="button" data-seccion="historial" aria-controls="historial" data-i18n="barra.historial">Historial</button>
+    <button type="button" data-seccion="negocio" aria-controls="negocio" data-i18n="barra.negocio">Mi negocio</button>
   </nav>
 
   <dialog id="confirmar-borrado" class="dialogo" aria-labelledby="confirmar-texto">
     <form method="dialog">
       <p id="confirmar-texto" class="dialogo-texto"></p>
       <div class="acciones">
-        <button type="submit" value="cancelar" class="boton-secundario" autofocus>Cancelar</button>
-        <button type="submit" value="borrar" class="boton-borrar">Borrar</button>
+        <button type="submit" value="cancelar" class="boton-secundario" autofocus data-i18n="confirmar.cancelar">Cancelar</button>
+        <button type="submit" value="borrar" class="boton-borrar" data-i18n="confirmar.borrar">Borrar</button>
       </div>
     </form>
   </dialog>
@@ -202,27 +211,27 @@
     </header>
 
     <dl class="hoja-datos">
-      <div data-hoja-fila><dt>Cotización</dt><dd data-hoja="numero"></dd></div>
-      <div data-hoja-fila><dt>Fecha</dt><dd data-hoja="fecha"></dd></div>
-      <div data-hoja-fila><dt>Cliente</dt><dd data-hoja="cliente"></dd></div>
+      <div data-hoja-fila><dt data-i18n="hoja.cotizacion">Cotización</dt><dd data-hoja="numero"></dd></div>
+      <div data-hoja-fila><dt data-i18n="hoja.fecha">Fecha</dt><dd data-hoja="fecha"></dd></div>
+      <div data-hoja-fila><dt data-i18n="hoja.cliente">Cliente</dt><dd data-hoja="cliente"></dd></div>
     </dl>
 
     <table id="hoja-tabla" class="hoja-lineas">
       <thead>
         <tr>
-          <th scope="col">Descripción</th>
-          <th scope="col">Cantidad</th>
-          <th scope="col">Precio</th>
-          <th scope="col">Importe</th>
+          <th scope="col" data-i18n="hoja.descripcion">Descripción</th>
+          <th scope="col" data-i18n="hoja.cantidad">Cantidad</th>
+          <th scope="col" data-i18n="hoja.precio">Precio</th>
+          <th scope="col" data-i18n="hoja.importe">Importe</th>
         </tr>
       </thead>
       <tbody id="hoja-lineas"></tbody>
     </table>
 
     <dl class="hoja-totales">
-      <div data-hoja-fila><dt>Subtotal</dt><dd data-hoja="subtotal"></dd></div>
-      <div data-hoja-fila><dt>Impuesto</dt><dd data-hoja="impuesto"></dd></div>
-      <div class="hoja-total" data-hoja-fila><dt>Total</dt><dd data-hoja="total"></dd></div>
+      <div data-hoja-fila><dt data-i18n="hoja.subtotal">Subtotal</dt><dd data-hoja="subtotal"></dd></div>
+      <div data-hoja-fila><dt data-i18n="hoja.impuesto">Impuesto</dt><dd data-hoja="impuesto"></dd></div>
+      <div class="hoja-total" data-hoja-fila><dt data-i18n="hoja.total">Total</dt><dd data-hoja="total"></dd></div>
     </dl>
 
     <p class="hoja-notas" data-hoja="notas"></p>
