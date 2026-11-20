@@ -1,45 +1,45 @@
-# Cotizador — diseño
+# Cotizador — design
 
-App web gratuita para que un plomero, jardinero, pintor o cualquier oficio arme una cotización en el teléfono y la mande por WhatsApp o en PDF. Hecha por IngenioTech. Nombre provisional: **Cotiza Rápido**.
+A free web app that lets a plumber, gardener, painter or any other tradesperson put together a quote on their phone and send it by WhatsApp or as a PDF. Made by IngenioTech. Working name: **Cotiza Rápido**.
 
-## Reglas del proyecto
+## Project rules
 
-- HTML, CSS y JavaScript puros. Sin dependencias, sin paso de compilación.
-- Todo se guarda en el teléfono (`localStorage`). No hay servidor, cuentas ni datos en la nube.
-- Pensada primero para pantalla de teléfono.
-- Textos en español. El inglés se añade al final.
-- La lógica va en módulos sin acceso a la página, para poder probarla con `node --test`.
-- Se publica como página web (GitHub Pages) y se instala desde el navegador.
+- Plain HTML, CSS and JavaScript. No dependencies, no build step.
+- Everything is stored on the phone (`localStorage`). There is no server, no accounts and no data in the cloud.
+- Designed for a phone screen first.
+- Texts in Spanish. English is added at the end.
+- The logic goes in modules with no access to the page, so it can be tested with `node --test`.
+- It is published as a web page (GitHub Pages) and installed from the browser.
 
-## Archivos
+## Files
 
-| Archivo | Qué hace |
+| File | What it does |
 |---|---|
-| `package.json` | `"type": "module"`, `npm test` (`node --test`) y `npm start` (`node server.js`). Sin dependencias. |
-| `server.js` | Servidor local mínimo de archivos estáticos en `http://localhost:8080`, solo para probar. |
-| `index.html` | La única página: tres secciones (Cotización, Historial, Mi negocio) y una barra para cambiar entre ellas. |
-| `css/styles.css` | Estilos de pantalla. |
-| `css/print.css` | Estilos de impresión: la cotización como hoja limpia para guardar en PDF. |
-| `js/calc.js` | Cálculos: total por línea, subtotal, impuesto, total, formato de dinero. Sin acceso a la página. |
-| `js/store.js` | Guardar y leer: datos del negocio, cotizaciones y lista de servicios. Recibe el almacenamiento como parámetro. |
-| `js/share.js` | Arma el texto de la cotización y el enlace de WhatsApp. Sin acceso a la página. |
-| `js/i18n.js` | Textos en español e inglés. |
-| `js/app.js` | Une la página con los módulos: formularios, botones, listas. |
-| `test/*.test.js` | Pruebas de `calc.js`, `store.js` y `share.js`. |
-| `manifest.webmanifest`, `sw.js`, `icon.svg` | Para instalar la app y que funcione sin Internet. |
+| `package.json` | `"type": "module"`, `npm test` (`node --test`) and `npm start` (`node server.js`). No dependencies. |
+| `server.js` | Minimal local static file server at `http://localhost:8080`, for testing only. |
+| `index.html` | The only page: three sections (Cotización, Historial, Mi negocio) and a bar to switch between them. |
+| `css/styles.css` | Screen styles. |
+| `css/print.css` | Print styles: the quote as a clean sheet to save as PDF. |
+| `js/calc.js` | Calculations: line total, subtotal, tax, total, money format. No access to the page. |
+| `js/store.js` | Saving and reading: business details, quotes and the list of services. It receives the storage as a parameter. |
+| `js/share.js` | Builds the quote text and the WhatsApp link. No access to the page. |
+| `js/i18n.js` | Texts in Spanish and English. |
+| `js/app.js` | Connects the page to the modules: forms, buttons, lists. |
+| `test/*.test.js` | Tests for `calc.js`, `store.js` and `share.js`. |
+| `manifest.webmanifest`, `sw.js`, `icon.svg` | For installing the app and making it work without Internet. |
 
-## Datos
+## Data
 
-- **Negocio:** nombre, teléfono, porcentaje de impuesto (0 si no cobra), nota al pie (por ejemplo "Válida por 15 días").
-- **Cotización:** número consecutivo, fecha, cliente (nombre y teléfono), líneas (descripción, cantidad, precio), notas.
-- **Servicio guardado:** descripción y precio, para no escribirlos cada vez.
+- **Business:** name, phone, tax percentage (0 if it charges none), footer note (for example "Válida por 15 días").
+- **Quote:** consecutive number, date, customer (name and phone), lines (description, quantity, price), notes.
+- **Saved service:** description and price, so they don't have to be typed each time.
 
-El dinero se calcula en centavos enteros para no perder decimales.
+Money is calculated in whole cents so no decimals are lost.
 
-## Pantallas
+## Screens
 
-1. **Cotización:** cliente, líneas con botón para añadir y quitar, totales que se actualizan solos, y los botones **Guardar**, **WhatsApp** e **Imprimir / PDF**.
-2. **Historial:** cotizaciones guardadas, de la más nueva a la más vieja; abrir, duplicar o borrar.
-3. **Mi negocio:** datos del negocio y lista de servicios guardados.
+1. **Cotización:** customer, lines with a button to add and remove them, totals that update on their own, and the buttons **Guardar**, **WhatsApp** and **Imprimir / PDF**.
+2. **Historial:** saved quotes, from newest to oldest; open, duplicate or delete.
+3. **Mi negocio:** business details and the list of saved services.
 
-Pie de página: "Hecho por IngenioTech" con enlace.
+Footer: "Hecho por IngenioTech" with a link.

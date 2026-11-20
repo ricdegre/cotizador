@@ -36,7 +36,7 @@ npm test
 
 Every file was written through AI Router, a local tool that sends each task to the cheapest AI resource able to do it. It uses flat-rate subscriptions and a local model instead of pay-per-use APIs.
 
-The task list is in [TAREAS.md](TAREAS.md) and the design is in [PLAN.md](PLAN.md).
+The task list is in [TASKS.md](TASKS.md) and the design is in [PLAN.md](PLAN.md).
 
 ## Author
 
@@ -44,4 +44,4 @@ Made by Richard R Degregorio (IngenioTech). I am not a software developer. I sol
 
 ## License
 
-MIT.
+Released under the [MIT License](LICENSE). Copyright (c) 2026 Richard R Degregorio.
