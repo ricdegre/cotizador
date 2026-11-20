@@ -14,7 +14,7 @@ A free web app for tradespeople (plumbers, painters, gardeners and similar) to w
 
 ## Privacy
 
-Everything is stored on the device with `localStorage`. There is no server, no account and no tracking.
+Everything is stored on the device with `localStorage`. There is no server, no account and no tracking. Clearing your browser data deletes all saved quotes, customers, and services.
 
 ## Run it locally
 
