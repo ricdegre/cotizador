@@ -44,10 +44,18 @@ body > :not(.hoja) {
   color: var(--color-principal);
 }
 
-/* Número, fecha y cliente */
+/* Número, fecha y destinatario */
+
+.hoja-encabezado-cotizacion {
+  display: grid;
+  grid-template-columns: minmax(12rem, 1fr) minmax(14rem, 1fr);
+  gap: 2rem;
+  margin-bottom: 1.25rem;
+  break-inside: avoid;
+}
 
 .hoja-datos {
-  margin: 0 0 1.25rem;
+  margin: 0;
 }
 
 .hoja-datos div {
@@ -62,6 +70,20 @@ body > :not(.hoja) {
 
 .hoja-datos dd {
   margin: 0;
+}
+
+.hoja-facturar h2 {
+  margin: 0 0 0.25rem;
+  font-size: 11pt;
+  color: #000;
+}
+
+.hoja-facturar p {
+  margin: 0;
+}
+
+.hoja-cliente-nombre {
+  font-weight: 700;
 }
 
 /* Líneas */

@@ -20,6 +20,7 @@ export const TEXTOS = {
 
     // Cotización
     'cotizacion.titulo': 'Cotización',
+    'cotizacion.fecha': 'Fecha',
     'cotizacion.cliente': 'Cliente',
     'cotizacion.clienteNombre': 'Nombre',
     'cotizacion.clienteTelefono': 'Teléfono',
@@ -170,6 +171,7 @@ export const TEXTOS = {
 
     // Cotización
     'cotizacion.titulo': 'Quote',
+    'cotizacion.fecha': 'Date',
     'cotizacion.cliente': 'Customer',
     'cotizacion.clienteNombre': 'Name',
     'cotizacion.clienteTelefono': 'Phone',

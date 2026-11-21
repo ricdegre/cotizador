@@ -22,6 +22,11 @@
       <h2 id="titulo-cotizacion" data-i18n="cotizacion.titulo">Cotización</h2>
 
       <form id="form-cotizacion" autocomplete="off">
+        <div class="campo">
+          <label for="cotizacion-fecha" data-i18n="cotizacion.fecha">Fecha</label>
+          <input id="cotizacion-fecha" name="fecha" type="date">
+        </div>
+
         <fieldset class="grupo">
           <legend data-i18n="cotizacion.cliente">Cliente</legend>
           <div class="campo">
@@ -310,13 +315,26 @@
     <header class="hoja-negocio">
       <p class="hoja-negocio-nombre" data-hoja="negocio-nombre"></p>
       <p data-hoja="negocio-telefono"></p>
+      <p data-hoja="negocio-email"></p>
+      <p data-hoja="negocio-direccion"></p>
+      <p data-hoja="negocio-ubicacion"></p>
     </header>
 
-    <dl class="hoja-datos">
-      <div data-hoja-fila><dt data-i18n="hoja.cotizacion">Cotización</dt><dd data-hoja="numero"></dd></div>
-      <div data-hoja-fila><dt data-i18n="hoja.fecha">Fecha</dt><dd data-hoja="fecha"></dd></div>
-      <div data-hoja-fila><dt data-i18n="hoja.cliente">Cliente</dt><dd data-hoja="cliente"></dd></div>
-    </dl>
+    <div class="hoja-encabezado-cotizacion">
+      <dl class="hoja-datos">
+        <div data-hoja-fila><dt data-i18n="hoja.cotizacion">Cotización</dt><dd data-hoja="numero"></dd></div>
+        <div data-hoja-fila><dt data-i18n="hoja.fecha">Fecha</dt><dd data-hoja="fecha"></dd></div>
+      </dl>
+
+      <section class="hoja-facturar">
+        <h2 data-hoja="facturar-titulo">Facturar a</h2>
+        <p class="hoja-cliente-nombre" data-hoja="cliente-nombre"></p>
+        <p data-hoja="cliente-telefono"></p>
+        <p data-hoja="cliente-email"></p>
+        <p data-hoja="cliente-direccion"></p>
+        <p data-hoja="cliente-ubicacion"></p>
+      </section>
+    </div>
 
     <table id="hoja-tabla" class="hoja-lineas">
       <thead>

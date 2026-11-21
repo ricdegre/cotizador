@@ -13,10 +13,11 @@ let negocio = store.leerNegocio();
 // Idioma de la página; se guarda con los datos de "Mi negocio".
 let idioma = negocio.idioma;
 
-// La cotización del formulario: número 0 y sin fecha mientras no se guarde.
-let abierta = { numero: 0, fecha: '' };
+// La cotización del formulario: una nueva no tiene número y empieza con la fecha de hoy.
+let abierta = { numero: 0, fecha: fechaHoy() };
 
 const formulario = document.getElementById('form-cotizacion');
+const fechaCotizacion = formulario.elements.fecha;
 const listaLineas = document.getElementById('lineas');
 const plantillaLinea = document.getElementById('plantilla-linea');
 const botonAnadir = document.getElementById('anadir-linea');
@@ -69,6 +70,20 @@ function aTexto(valor) {
   return valor === null || valor === undefined ? '' : String(valor);
 }
 
+function fechaHoy() {
+  const hoy = new Date();
+  const anio = hoy.getFullYear();
+  const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+  const dia = String(hoy.getDate()).padStart(2, '0');
+  return `${anio}-${mes}-${dia}`;
+}
+
+// Convierte tanto una fecha de campo como una fecha ISO guardada al valor
+// YYYY-MM-DD que acepta input[type="date"].
+function fechaParaCampo(fecha) {
+  return /^(\d{4}-\d{2}-\d{2})/.exec(aTexto(fecha))?.[1] ?? '';
+}
+
 // 1050 -> "10.50". 0 queda vacío para que se vea el "0.00" de ejemplo.
 function precioTexto(centavos) {
   const valor = Math.round(Number(centavos));
@@ -78,8 +93,9 @@ function precioTexto(centavos) {
 
 // Fecha ISO -> formato del idioma elegido. Si no es una fecha, se muestra tal cual.
 function formatoFecha(fecha) {
-  const valor = new Date(fecha);
-  if (Number.isNaN(valor.getTime())) return aTexto(fecha);
+  const texto = aTexto(fecha);
+  const valor = new Date(/^\d{4}-\d{2}-\d{2}$/.test(texto) ? `${texto}T00:00:00` : texto);
+  if (Number.isNaN(valor.getTime())) return texto;
   const locale = idioma === 'en' ? 'en-US' : 'es';
   return valor.toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' });
 }
@@ -221,6 +237,7 @@ function leerFormulario() {
 function llenarFormulario(cotizacion) {
   const campos = formulario.elements;
   const cliente = cotizacion.cliente ?? {};
+  campos.fecha.value = fechaParaCampo(cotizacion.fecha);
   campos.clienteNombre.value = aTexto(cliente.nombre);
   campos.clienteTelefono.value = aTexto(cliente.telefono);
   campos.clienteDireccion.value = aTexto(cliente.direccion);
@@ -264,7 +281,8 @@ function nuevaCotizacion() {
   formulario.reset();
   listaLineas.replaceChildren();
   anadirLinea();
-  abierta = { numero: 0, fecha: '' };
+  abierta = { numero: 0, fecha: fechaHoy() };
+  fechaCotizacion.value = abierta.fecha;
   mostrarNumero();
   estadoCotizacion.textContent = '';
   formulario.elements.clienteNombre.focus();
@@ -282,6 +300,14 @@ function enviarWhatsApp() {
   );
 }
 
+// Une ciudad, estado y código postal sin dejar separadores ni espacios vacíos.
+function formatoUbicacion(datos) {
+  const ciudadEstado = [aTexto(datos?.ciudad).trim(), aTexto(datos?.estado).trim()]
+    .filter(Boolean)
+    .join(', ');
+  return [ciudadEstado, aTexto(datos?.codigoPostal).trim()].filter(Boolean).join(' ');
+}
+
 // Pone un texto en la hoja de impresión; si queda vacío, no se imprime.
 function ponerHoja(nombre, texto) {
   const elemento = hoja.querySelector(`[data-hoja="${nombre}"]`);
@@ -295,13 +321,14 @@ function llenarHoja() {
   const cotizacion = leerFormulario();
   const base = subtotal(cotizacion.lineas);
   const cargo = impuesto(base, negocio.impuesto);
-  const cliente = [cotizacion.cliente.nombre, cotizacion.cliente.telefono].filter(Boolean).join(' · ');
-
   ponerHoja('negocio-nombre', negocio.nombre);
   ponerHoja(
     'negocio-telefono',
     negocio.telefono ? t('hoja.telefono', idioma, { telefono: negocio.telefono }) : '',
   );
+  ponerHoja('negocio-email', negocio.email);
+  ponerHoja('negocio-direccion', negocio.direccion);
+  ponerHoja('negocio-ubicacion', formatoUbicacion(negocio));
   ponerHoja(
     'numero',
     abierta.numero
@@ -309,7 +336,12 @@ function llenarHoja() {
       : t('hoja.sinGuardar', idioma),
   );
   ponerHoja('fecha', formatoFecha(abierta.fecha || new Date().toISOString()));
-  ponerHoja('cliente', cliente);
+  ponerHoja('facturar-titulo', idioma === 'en' ? 'Bill to' : 'Facturar a');
+  ponerHoja('cliente-nombre', cotizacion.cliente.nombre);
+  ponerHoja('cliente-telefono', cotizacion.cliente.telefono);
+  ponerHoja('cliente-email', cotizacion.cliente.email);
+  ponerHoja('cliente-direccion', cotizacion.cliente.direccion);
+  ponerHoja('cliente-ubicacion', formatoUbicacion(cotizacion.cliente));
 
   const filas = cotizacion.lineas.map((linea) => {
     const fila = document.createElement('tr');
@@ -380,8 +412,9 @@ function cargarCotizacion(numero, comoNueva) {
   }
   llenarFormulario(cotizacion);
   abierta = comoNueva
-    ? { numero: 0, fecha: '' }
-    : { numero: cotizacion.numero, fecha: aTexto(cotizacion.fecha) };
+    ? { numero: 0, fecha: fechaHoy() }
+    : { numero: cotizacion.numero, fecha: fechaParaCampo(cotizacion.fecha) };
+  fechaCotizacion.value = abierta.fecha;
   mostrarNumero();
   estadoCotizacion.textContent = comoNueva
     ? t('cotizacion.copia', idioma, { numero })
@@ -414,7 +447,8 @@ async function borrarCotizacion(numero) {
   }
   // Si estaba abierta, lo que queda en el formulario pasa a ser una nueva.
   if (abierta.numero === numero) {
-    abierta = { numero: 0, fecha: '' };
+    abierta = { numero: 0, fecha: fechaHoy() };
+    fechaCotizacion.value = abierta.fecha;
     mostrarNumero();
   }
   mostrarHistorial();
@@ -444,6 +478,11 @@ function mostrarSeccion(id) {
 }
 
 formulario.addEventListener('input', recalcular);
+
+fechaCotizacion.addEventListener('input', () => {
+  abierta.fecha = fechaCotizacion.value;
+  mostrarNumero();
+});
 
 // Al cambiar algo, el aviso de "guardada" ya no vale.
 formulario.addEventListener('input', () => {
@@ -857,6 +896,7 @@ selectorIdioma.value = idioma;
 mostrarNegocio();
 mostrarClientes();
 mostrarServicios();
+fechaCotizacion.value = abierta.fecha;
 mostrarNumero();
 anadirLinea();
 
