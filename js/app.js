@@ -98,6 +98,11 @@ function mostrarNegocio() {
   const campos = formularioNegocio.elements;
   campos.nombre.value = negocio.nombre;
   campos.telefono.value = negocio.telefono;
+  campos.direccion.value = negocio.direccion;
+  campos.ciudad.value = negocio.ciudad;
+  campos.estado.value = negocio.estado;
+  campos.codigoPostal.value = negocio.codigoPostal;
+  campos.email.value = negocio.email;
   campos.codigoPais.value = negocio.codigoPais;
   campos.impuesto.value = String(negocio.impuesto);
   campos.nota.value = negocio.nota;
@@ -110,6 +115,11 @@ function guardarNegocio() {
     negocio = store.guardarNegocio({
       nombre: campos.nombre.value.trim(),
       telefono: campos.telefono.value.trim(),
+      direccion: campos.direccion.value.trim(),
+      ciudad: campos.ciudad.value.trim(),
+      estado: campos.estado.value.trim(),
+      codigoPostal: campos.codigoPostal.value.trim(),
+      email: campos.email.value.trim(),
       codigoPais: campos.codigoPais.value,
       impuesto: campos.impuesto.value,
       nota: campos.nota.value.trim(),
