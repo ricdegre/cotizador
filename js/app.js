@@ -43,11 +43,19 @@ const dialogoBorrar = document.getElementById('confirmar-borrado');
 const textoBorrar = document.getElementById('confirmar-texto');
 const nombreCliente = formulario.elements.clienteNombre;
 const telefonoCliente = formulario.elements.clienteTelefono;
+const direccionCliente = formulario.elements.clienteDireccion;
+const ciudadCliente = formulario.elements.clienteCiudad;
+const estadoCliente = formulario.elements.clienteEstado;
+const codigoPostalCliente = formulario.elements.clienteCodigoPostal;
+const emailCliente = formulario.elements.clienteEmail;
 const sugerenciasClientes = document.getElementById('clientes-sugeridos');
 const listaClientes = document.getElementById('lista-clientes');
 const plantillaCliente = document.getElementById('plantilla-cliente');
 const clientesVacio = document.getElementById('clientes-vacio');
 const estadoClientes = document.getElementById('clientes-estado');
+const dialogoEditarCliente = document.getElementById('editar-cliente');
+const formularioEditarCliente = document.getElementById('form-editar-cliente');
+const botonCancelarEdicionCliente = document.getElementById('cancelar-edicion-cliente');
 const selectorIdioma = document.getElementById('negocio-idioma');
 
 // Para dar a cada campo de línea un id único, aunque se quiten líneas.
@@ -197,6 +205,11 @@ function leerFormulario() {
     cliente: {
       nombre: campos.clienteNombre.value.trim(),
       telefono: campos.clienteTelefono.value.trim(),
+      direccion: campos.clienteDireccion.value.trim(),
+      ciudad: campos.clienteCiudad.value.trim(),
+      estado: campos.clienteEstado.value.trim(),
+      codigoPostal: campos.clienteCodigoPostal.value.trim(),
+      email: campos.clienteEmail.value.trim(),
     },
     lineas: leerLineas().filter((linea) => linea.descripcion || linea.precio),
     notas: campos.notas.value.trim(),
@@ -210,6 +223,11 @@ function llenarFormulario(cotizacion) {
   const cliente = cotizacion.cliente ?? {};
   campos.clienteNombre.value = aTexto(cliente.nombre);
   campos.clienteTelefono.value = aTexto(cliente.telefono);
+  campos.clienteDireccion.value = aTexto(cliente.direccion);
+  campos.clienteCiudad.value = aTexto(cliente.ciudad);
+  campos.clienteEstado.value = aTexto(cliente.estado);
+  campos.clienteCodigoPostal.value = aTexto(cliente.codigoPostal);
+  campos.clienteEmail.value = aTexto(cliente.email);
   campos.notas.value = aTexto(cotizacion.notas);
 
   listaLineas.replaceChildren();
@@ -521,8 +539,10 @@ function mostrarClientes() {
     fila.dataset.nombre = cliente.nombre;
     dato(fila, 'nombre').textContent = cliente.nombre;
     dato(fila, 'telefono').textContent = cliente.telefono || t('clientes.sinTelefono', idioma);
-    const boton = fila.querySelector('[data-accion="borrar"]');
-    boton.setAttribute('aria-label', t('clientes.borrarEtiqueta', idioma, { nombre: cliente.nombre }));
+    const botonEditar = fila.querySelector('[data-accion="editar"]');
+    botonEditar.setAttribute('aria-label', t('clientes.editarEtiqueta', idioma, { nombre: cliente.nombre }));
+    const botonBorrar = fila.querySelector('[data-accion="borrar"]');
+    botonBorrar.setAttribute('aria-label', t('clientes.borrarEtiqueta', idioma, { nombre: cliente.nombre }));
     return fila;
   });
   listaClientes.replaceChildren(...filas);
@@ -542,6 +562,63 @@ function buscarCliente(nombre) {
   return clientes.find((cliente) => cliente.nombre.toLowerCase() === clave);
 }
 
+function llenarCamposCliente(cliente) {
+  telefonoCliente.value = aTexto(cliente.telefono);
+  direccionCliente.value = aTexto(cliente.direccion);
+  ciudadCliente.value = aTexto(cliente.ciudad);
+  estadoCliente.value = aTexto(cliente.estado);
+  codigoPostalCliente.value = aTexto(cliente.codigoPostal);
+  emailCliente.value = aTexto(cliente.email);
+}
+
+let nombreClienteEditado = '';
+
+function editarCliente(nombre) {
+  const cliente = buscarCliente(nombre);
+  if (!cliente) {
+    mostrarClientes();
+    estadoClientes.textContent = t('clientes.noExistia', idioma);
+    return;
+  }
+  nombreClienteEditado = cliente.nombre;
+  const campos = formularioEditarCliente.elements;
+  campos.nombre.value = aTexto(cliente.nombre);
+  campos.telefono.value = aTexto(cliente.telefono);
+  campos.direccion.value = aTexto(cliente.direccion);
+  campos.ciudad.value = aTexto(cliente.ciudad);
+  campos.estado.value = aTexto(cliente.estado);
+  campos.codigoPostal.value = aTexto(cliente.codigoPostal);
+  campos.email.value = aTexto(cliente.email);
+  dialogoEditarCliente.showModal();
+  campos.nombre.focus();
+}
+
+function guardarEdicionCliente() {
+  const campos = formularioEditarCliente.elements;
+  const cliente = {
+    nombre: campos.nombre.value.trim(),
+    telefono: campos.telefono.value.trim(),
+    direccion: campos.direccion.value.trim(),
+    ciudad: campos.ciudad.value.trim(),
+    estado: campos.estado.value.trim(),
+    codigoPostal: campos.codigoPostal.value.trim(),
+    email: campos.email.value.trim(),
+  };
+  try {
+    store.guardarCliente(cliente);
+    if (nombreClienteEditado.toLowerCase() !== cliente.nombre.toLowerCase()) {
+      store.borrarCliente(nombreClienteEditado);
+    }
+  } catch {
+    estadoClientes.textContent = t('error.guardar', idioma);
+    return;
+  }
+  nombreClienteEditado = '';
+  dialogoEditarCliente.close();
+  mostrarClientes();
+  estadoClientes.textContent = t('clientes.guardado', idioma, { nombre: cliente.nombre });
+}
+
 async function borrarCliente(nombre) {
   if (!(await confirmarBorrado(t('confirmar.cliente', idioma, { nombre })))) return;
   let borrado;
@@ -559,13 +636,25 @@ async function borrarCliente(nombre) {
 
 nombreCliente.addEventListener('input', () => {
   const cliente = buscarCliente(nombreCliente.value);
-  if (cliente) telefonoCliente.value = cliente.telefono;
+  if (cliente) llenarCamposCliente(cliente);
 });
 
 listaClientes.addEventListener('click', (evento) => {
-  const boton = evento.target.closest('[data-accion="borrar"]');
+  const boton = evento.target.closest('[data-accion]');
   if (!boton) return;
-  borrarCliente(boton.closest('.cliente-guardado').dataset.nombre);
+  const nombre = boton.closest('.cliente-guardado').dataset.nombre;
+  if (boton.dataset.accion === 'editar') editarCliente(nombre);
+  else if (boton.dataset.accion === 'borrar') borrarCliente(nombre);
+});
+
+formularioEditarCliente.addEventListener('submit', (evento) => {
+  evento.preventDefault();
+  guardarEdicionCliente();
+});
+
+botonCancelarEdicionCliente.addEventListener('click', () => {
+  nombreClienteEditado = '';
+  dialogoEditarCliente.close();
 });
 
 // Servicios guardados en "Mi negocio". Se sugieren en la descripción de
@@ -577,6 +666,9 @@ const serviciosVacio = document.getElementById('servicios-vacio');
 const estadoServicios = document.getElementById('servicios-estado');
 const formularioServicio = document.getElementById('form-servicio');
 const sugerencias = document.getElementById('servicios-sugeridos');
+const dialogoEditarServicio = document.getElementById('editar-servicio');
+const formularioEditarServicio = document.getElementById('form-editar-servicio');
+const botonCancelarEdicionServicio = document.getElementById('cancelar-edicion-servicio');
 
 // Los servicios como los da store.js, para buscar el precio al escribir.
 let servicios = [];
@@ -589,8 +681,13 @@ function mostrarServicios() {
     fila.dataset.descripcion = servicio.descripcion;
     dato(fila, 'descripcion').textContent = servicio.descripcion;
     dato(fila, 'precio').textContent = formatoDinero(servicio.precio);
-    const boton = fila.querySelector('[data-accion="borrar"]');
-    boton.setAttribute(
+    const botonEditar = fila.querySelector('[data-accion="editar"]');
+    botonEditar.setAttribute(
+      'aria-label',
+      t('servicios.editarEtiqueta', idioma, { descripcion: servicio.descripcion }),
+    );
+    const botonBorrar = fila.querySelector('[data-accion="borrar"]');
+    botonBorrar.setAttribute(
       'aria-label',
       t('servicios.borrarEtiqueta', idioma, { descripcion: servicio.descripcion }),
     );
@@ -634,6 +731,51 @@ function anadirServicio() {
   mostrarServicios();
   formularioServicio.reset();
   campos.descripcion.focus();
+  estadoServicios.textContent = t('servicios.guardado', idioma, {
+    descripcion: guardado.descripcion,
+  });
+}
+
+let descripcionServicioEditado = '';
+
+function editarServicio(descripcion) {
+  const servicio = buscarServicio(descripcion);
+  if (!servicio) {
+    mostrarServicios();
+    estadoServicios.textContent = t('servicios.noExistia', idioma);
+    return;
+  }
+  descripcionServicioEditado = servicio.descripcion;
+  const campos = formularioEditarServicio.elements;
+  campos.descripcion.value = servicio.descripcion;
+  campos.precio.value = precioTexto(servicio.precio);
+  dialogoEditarServicio.showModal();
+  campos.descripcion.focus();
+}
+
+function guardarEdicionServicio() {
+  const campos = formularioEditarServicio.elements;
+  let guardado;
+  try {
+    guardado = store.guardarServicio({
+      descripcion: campos.descripcion.value,
+      precio: aCentavos(campos.precio.value),
+    });
+    if (!guardado) {
+      estadoServicios.textContent = t('servicios.faltaDescripcion', idioma);
+      campos.descripcion.focus();
+      return;
+    }
+    if (descripcionServicioEditado.toLowerCase() !== guardado.descripcion.toLowerCase()) {
+      store.borrarServicio(descripcionServicioEditado);
+    }
+  } catch {
+    estadoServicios.textContent = t('error.guardar', idioma);
+    return;
+  }
+  descripcionServicioEditado = '';
+  dialogoEditarServicio.close();
+  mostrarServicios();
   estadoServicios.textContent = t('servicios.guardado', idioma, {
     descripcion: guardado.descripcion,
   });
@@ -689,9 +831,25 @@ formularioServicio.addEventListener('input', () => {
 });
 
 listaServicios.addEventListener('click', (evento) => {
-  const boton = evento.target.closest('[data-accion="borrar"]');
+  const boton = evento.target.closest('[data-accion]');
   if (!boton) return;
-  borrarServicio(boton.closest('.servicio-guardado').dataset.descripcion);
+  const descripcion = boton.closest('.servicio-guardado').dataset.descripcion;
+  if (boton.dataset.accion === 'editar') editarServicio(descripcion);
+  else if (boton.dataset.accion === 'borrar') borrarServicio(descripcion);
+});
+
+formularioEditarServicio.addEventListener('submit', (evento) => {
+  evento.preventDefault();
+  guardarEdicionServicio();
+});
+
+formularioEditarServicio.addEventListener('input', () => {
+  estadoServicios.textContent = '';
+});
+
+botonCancelarEdicionServicio.addEventListener('click', () => {
+  descripcionServicioEditado = '';
+  dialogoEditarServicio.close();
 });
 
 aplicarIdioma(idioma);

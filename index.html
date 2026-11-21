@@ -33,6 +33,26 @@
             <label for="cliente-telefono" data-i18n="cotizacion.clienteTelefono">Teléfono</label>
             <input id="cliente-telefono" name="clienteTelefono" type="tel" inputmode="tel">
           </div>
+          <div class="campo">
+            <label for="cliente-direccion" data-i18n="cotizacion.clienteDireccion">Dirección</label>
+            <input id="cliente-direccion" name="clienteDireccion" type="text">
+          </div>
+          <div class="campo">
+            <label for="cliente-ciudad" data-i18n="cotizacion.clienteCiudad">Ciudad</label>
+            <input id="cliente-ciudad" name="clienteCiudad" type="text">
+          </div>
+          <div class="campo">
+            <label for="cliente-estado" data-i18n="cotizacion.clienteEstado">Estado</label>
+            <input id="cliente-estado" name="clienteEstado" type="text">
+          </div>
+          <div class="campo">
+            <label for="cliente-codigo-postal" data-i18n="cotizacion.clienteCodigoPostal">Código postal</label>
+            <input id="cliente-codigo-postal" name="clienteCodigoPostal" type="text" inputmode="numeric">
+          </div>
+          <div class="campo">
+            <label for="cliente-email" data-i18n="cotizacion.clienteEmail">Correo electrónico</label>
+            <input id="cliente-email" name="clienteEmail" type="email" inputmode="email">
+          </div>
         </fieldset>
 
         <fieldset class="grupo">
@@ -172,7 +192,10 @@
         <li class="servicio-guardado cliente-guardado">
           <p class="servicio-descripcion" data-dato="nombre"></p>
           <p class="servicio-precio" data-dato="telefono"></p>
-          <button type="button" class="boton-peligro" data-accion="borrar" data-i18n="clientes.borrar">Borrar</button>
+          <div class="acciones">
+            <button type="button" class="boton-secundario" data-accion="editar" data-i18n="clientes.editar">Editar</button>
+            <button type="button" class="boton-peligro" data-accion="borrar" data-i18n="clientes.borrar">Borrar</button>
+          </div>
         </li>
       </template>
 
@@ -198,7 +221,10 @@
         <li class="servicio-guardado">
           <p class="servicio-descripcion" data-dato="descripcion"></p>
           <p class="servicio-precio" data-dato="precio"></p>
-          <button type="button" class="boton-peligro" data-accion="borrar" data-i18n="servicios.borrar">Borrar</button>
+          <div class="acciones">
+            <button type="button" class="boton-secundario" data-accion="editar" data-i18n="servicios.editar">Editar</button>
+            <button type="button" class="boton-peligro" data-accion="borrar" data-i18n="servicios.borrar">Borrar</button>
+          </div>
         </li>
       </template>
     </section>
@@ -213,6 +239,62 @@
     <button type="button" data-seccion="historial" aria-controls="historial" data-i18n="barra.historial">Historial</button>
     <button type="button" data-seccion="negocio" aria-controls="negocio" data-i18n="barra.negocio">Mi negocio</button>
   </nav>
+
+  <dialog id="editar-cliente" class="dialogo" aria-labelledby="editar-cliente-titulo">
+    <form id="form-editar-cliente" autocomplete="off">
+      <h2 id="editar-cliente-titulo" data-i18n="clientes.editarTitulo">Editar cliente</h2>
+      <div class="campo">
+        <label for="editar-cliente-nombre" data-i18n="cotizacion.clienteNombre">Nombre</label>
+        <input id="editar-cliente-nombre" name="nombre" type="text" required>
+      </div>
+      <div class="campo">
+        <label for="editar-cliente-telefono" data-i18n="cotizacion.clienteTelefono">Teléfono</label>
+        <input id="editar-cliente-telefono" name="telefono" type="tel" inputmode="tel">
+      </div>
+      <div class="campo">
+        <label for="editar-cliente-direccion" data-i18n="cotizacion.clienteDireccion">Dirección</label>
+        <input id="editar-cliente-direccion" name="direccion" type="text">
+      </div>
+      <div class="campo">
+        <label for="editar-cliente-ciudad" data-i18n="cotizacion.clienteCiudad">Ciudad</label>
+        <input id="editar-cliente-ciudad" name="ciudad" type="text">
+      </div>
+      <div class="campo">
+        <label for="editar-cliente-estado" data-i18n="cotizacion.clienteEstado">Estado</label>
+        <input id="editar-cliente-estado" name="estado" type="text">
+      </div>
+      <div class="campo">
+        <label for="editar-cliente-codigo-postal" data-i18n="cotizacion.clienteCodigoPostal">Código postal</label>
+        <input id="editar-cliente-codigo-postal" name="codigoPostal" type="text" inputmode="numeric">
+      </div>
+      <div class="campo">
+        <label for="editar-cliente-email" data-i18n="cotizacion.clienteEmail">Correo electrónico</label>
+        <input id="editar-cliente-email" name="email" type="email" inputmode="email">
+      </div>
+      <div class="acciones">
+        <button type="button" id="cancelar-edicion-cliente" class="boton-secundario" data-i18n="clientes.cancelar">Cancelar</button>
+        <button type="submit" data-i18n="clientes.guardar">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="editar-servicio" class="dialogo" aria-labelledby="editar-servicio-titulo">
+    <form id="form-editar-servicio" autocomplete="off">
+      <h2 id="editar-servicio-titulo" data-i18n="servicios.editarTitulo">Editar servicio</h2>
+      <div class="campo">
+        <label for="editar-servicio-descripcion" data-i18n="servicios.descripcion">Descripción del servicio</label>
+        <input id="editar-servicio-descripcion" name="descripcion" type="text" required>
+      </div>
+      <div class="campo">
+        <label for="editar-servicio-precio" data-i18n="servicios.precio">Precio</label>
+        <input id="editar-servicio-precio" name="precio" type="text" inputmode="decimal" placeholder="0.00" data-i18n-placeholder="servicios.precioEjemplo">
+      </div>
+      <div class="acciones">
+        <button type="button" id="cancelar-edicion-servicio" class="boton-secundario" data-i18n="servicios.cancelar">Cancelar</button>
+        <button type="submit" data-i18n="servicios.guardar">Guardar</button>
+      </div>
+    </form>
+  </dialog>
 
   <dialog id="confirmar-borrado" class="dialogo" aria-labelledby="confirmar-texto">
     <form method="dialog">
