@@ -404,12 +404,13 @@ function mostrarHistorial() {
 
 // "Abrir" sigue editando esa cotización; "Duplicar" la copia como nueva, sin número.
 function cargarCotizacion(numero, comoNueva) {
-  const cotizacion = store.leerCotizacion(numero);
+  let cotizacion = store.leerCotizacion(numero);
   if (!cotizacion) {
     mostrarHistorial();
     estadoHistorial.textContent = t('historial.noExiste', idioma);
     return;
   }
+  cotizacion = completarClienteCotizacion(cotizacion);
   llenarFormulario(cotizacion);
   abierta = comoNueva
     ? { numero: 0, fecha: fechaHoy() }
@@ -599,6 +600,20 @@ function buscarCliente(nombre) {
   const clave = aTexto(nombre).trim().toLowerCase();
   if (!clave) return undefined;
   return clientes.find((cliente) => cliente.nombre.toLowerCase() === clave);
+}
+
+// Conserva los datos propios de la cotización y completa solo los que falten
+// con la ficha actual del cliente guardado que tenga el mismo nombre.
+function completarClienteCotizacion(cotizacion) {
+  const cliente = cotizacion.cliente ?? {};
+  const guardado = buscarCliente(cliente.nombre);
+  if (!guardado) return cotizacion;
+
+  const completado = { ...cliente };
+  for (const campo of ['telefono', 'direccion', 'ciudad', 'estado', 'codigoPostal', 'email']) {
+    if (!aTexto(completado[campo]).trim()) completado[campo] = aTexto(guardado[campo]);
+  }
+  return { ...cotizacion, cliente: completado };
 }
 
 function llenarCamposCliente(cliente) {
