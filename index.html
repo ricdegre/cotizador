@@ -133,6 +133,13 @@
     <section id="negocio" aria-labelledby="titulo-negocio" hidden>
       <h2 id="titulo-negocio" data-i18n="negocio.titulo">Mi negocio</h2>
 
+      <div class="pestanas-negocio" role="tablist" aria-label="Secciones de Mi negocio" data-i18n-aria="negocio.pestanasEtiqueta">
+        <button type="button" id="pestana-negocio-datos" role="tab" data-pestana-negocio="panel-negocio-datos" aria-controls="panel-negocio-datos" aria-selected="true" data-i18n="negocio.pestanaNegocio">Mi negocio</button>
+        <button type="button" id="pestana-negocio-clientes" role="tab" data-pestana-negocio="panel-negocio-clientes" aria-controls="panel-negocio-clientes" aria-selected="false" tabindex="-1" data-i18n="negocio.pestanaClientes">Clientes</button>
+        <button type="button" id="pestana-negocio-servicios" role="tab" data-pestana-negocio="panel-negocio-servicios" aria-controls="panel-negocio-servicios" aria-selected="false" tabindex="-1" data-i18n="negocio.pestanaServicios">Servicios / artículos</button>
+      </div>
+
+      <div id="panel-negocio-datos" class="panel-negocio" role="tabpanel" aria-labelledby="pestana-negocio-datos">
       <!-- Cada idioma se muestra con su propio nombre, sin traducir. -->
       <div class="campo">
         <label for="negocio-idioma" data-i18n="idioma.etiqueta">Idioma / Language</label>
@@ -186,7 +193,9 @@
         <button type="submit" data-i18n="negocio.guardar">Guardar</button>
         <p id="negocio-estado" class="aviso" role="status"></p>
       </form>
+      </div>
 
+      <div id="panel-negocio-clientes" class="panel-negocio" role="tabpanel" aria-labelledby="pestana-negocio-clientes" hidden>
       <h3 id="titulo-clientes" class="titulo-servicios" data-i18n="clientes.titulo">Clientes</h3>
 
       <p id="clientes-vacio" class="vacio" data-i18n="clientes.vacio">Todavía no hay clientes guardados.</p>
@@ -203,7 +212,9 @@
           </div>
         </li>
       </template>
+      </div>
 
+      <div id="panel-negocio-servicios" class="panel-negocio" role="tabpanel" aria-labelledby="pestana-negocio-servicios" hidden>
       <h3 id="titulo-servicios" class="titulo-servicios" data-i18n="servicios.titulo">Servicios guardados</h3>
 
       <p id="servicios-vacio" class="vacio" data-i18n="servicios.vacio">Todavía no hay servicios guardados.</p>
@@ -232,6 +243,7 @@
           </div>
         </li>
       </template>
+      </div>
     </section>
   </main>
 

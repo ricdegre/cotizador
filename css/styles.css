@@ -423,3 +423,41 @@ button:disabled {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
+
+/* Pestañas dentro de Mi negocio */
+
+.pestanas-negocio {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.25rem;
+  margin-bottom: 1.25rem;
+  padding: 0.25rem;
+  background: var(--color-principal-claro);
+  border-radius: var(--radio);
+}
+
+.pestanas-negocio button {
+  min-width: 0;
+  min-height: var(--alto-boton);
+  padding: 0.5rem 0.25rem;
+  font-size: clamp(0.75rem, 3.4vw, 0.9375rem);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+  color: var(--color-principal);
+  background: transparent;
+  border-color: transparent;
+}
+
+.pestanas-negocio button:hover {
+  background: rgba(255, 255, 255, 0.65);
+}
+
+.pestanas-negocio button[aria-selected='true'] {
+  color: #fff;
+  background: var(--color-principal);
+  border-color: var(--color-principal);
+}
+
+.panel-negocio > .titulo-servicios:first-child {
+  margin-top: 0;
+}

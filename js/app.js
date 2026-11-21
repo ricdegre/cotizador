@@ -58,6 +58,10 @@ const dialogoEditarCliente = document.getElementById('editar-cliente');
 const formularioEditarCliente = document.getElementById('form-editar-cliente');
 const botonCancelarEdicionCliente = document.getElementById('cancelar-edicion-cliente');
 const selectorIdioma = document.getElementById('negocio-idioma');
+const botonesPestanaNegocio = [
+  ...document.querySelectorAll('.pestanas-negocio [data-pestana-negocio]'),
+];
+const panelesNegocio = [...document.querySelectorAll('.panel-negocio')];
 
 // Para dar a cada campo de línea un id único, aunque se quiten líneas.
 let siguienteLinea = 1;
@@ -458,6 +462,16 @@ async function borrarCotizacion(numero) {
     : t('historial.noExistia', idioma);
 }
 
+// Dentro de "Mi negocio", muestra solo el panel de la pestaña elegida.
+function mostrarPestanaNegocio(id) {
+  for (const boton of botonesPestanaNegocio) {
+    const activa = boton.dataset.pestanaNegocio === id;
+    boton.setAttribute('aria-selected', String(activa));
+    boton.tabIndex = activa ? 0 : -1;
+  }
+  for (const panel of panelesNegocio) panel.hidden = panel.id !== id;
+}
+
 // Muestra la sección elegida, oculta las otras y marca su botón.
 // El historial se vuelve a armar cada vez, con el impuesto actual.
 function mostrarSeccion(id) {
@@ -466,6 +480,7 @@ function mostrarSeccion(id) {
     estadoHistorial.textContent = '';
   }
   if (id === 'negocio') {
+    mostrarPestanaNegocio('panel-negocio-datos');
     mostrarClientes();
     estadoClientes.textContent = '';
   }
@@ -524,6 +539,24 @@ listaHistorial.addEventListener('click', (evento) => {
 
 for (const boton of botonesSeccion) {
   boton.addEventListener('click', () => mostrarSeccion(boton.dataset.seccion));
+}
+
+for (const boton of botonesPestanaNegocio) {
+  boton.addEventListener('click', () => mostrarPestanaNegocio(boton.dataset.pestanaNegocio));
+  boton.addEventListener('keydown', (evento) => {
+    const indice = botonesPestanaNegocio.indexOf(boton);
+    let siguiente = indice;
+    if (evento.key === 'ArrowRight') siguiente = (indice + 1) % botonesPestanaNegocio.length;
+    else if (evento.key === 'ArrowLeft') {
+      siguiente = (indice - 1 + botonesPestanaNegocio.length) % botonesPestanaNegocio.length;
+    } else if (evento.key === 'Home') siguiente = 0;
+    else if (evento.key === 'End') siguiente = botonesPestanaNegocio.length - 1;
+    else return;
+    evento.preventDefault();
+    const botonSiguiente = botonesPestanaNegocio[siguiente];
+    mostrarPestanaNegocio(botonSiguiente.dataset.pestanaNegocio);
+    botonSiguiente.focus();
+  });
 }
 
 formularioNegocio.addEventListener('submit', (evento) => {

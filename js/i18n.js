@@ -81,6 +81,10 @@ export const TEXTOS = {
     'negocio.notaEjemplo': 'Válida por 15 días',
     'negocio.guardar': 'Guardar',
     'negocio.guardado': 'Datos guardados.',
+    'negocio.pestanasEtiqueta': 'Secciones de Mi negocio',
+    'negocio.pestanaNegocio': 'Mi negocio',
+    'negocio.pestanaClientes': 'Clientes',
+    'negocio.pestanaServicios': 'Servicios / artículos',
 
     // Clientes guardados
     'clientes.titulo': 'Clientes',
@@ -232,6 +236,10 @@ export const TEXTOS = {
     'negocio.notaEjemplo': 'Valid for 15 days',
     'negocio.guardar': 'Save',
     'negocio.guardado': 'Details saved.',
+    'negocio.pestanasEtiqueta': 'My business sections',
+    'negocio.pestanaNegocio': 'My business',
+    'negocio.pestanaClientes': 'Customers',
+    'negocio.pestanaServicios': 'Services / items',
 
     // Clientes guardados
     'clientes.titulo': 'Customers',
