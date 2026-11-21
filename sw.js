@@ -2,7 +2,7 @@
 // Las rutas son relativas a sw.js, así funciona también publicada en una subcarpeta.
 // Al cambiar archivos, sube VERSION para que se vuelvan a guardar.
 
-const VERSION = 2;
+const VERSION = 3;
 const PREFIJO = 'cotiza-rapido-';
 const CACHE = `${PREFIJO}v${VERSION}`;
 
@@ -45,28 +45,36 @@ self.addEventListener('activate', (evento) => {
   );
 });
 
-// Primero la red, y se actualiza la caché. Sin red, lo guardado; si es una
-// página que no está guardada, index.html.
-async function responder(peticion) {
+// Pide el archivo a la red y, si llega bien, lo guarda en la caché.
+async function actualizar(peticion) {
   const cache = await caches.open(CACHE);
-  try {
-    const respuesta = await fetch(peticion);
-    if (respuesta.ok) await cache.put(peticion, respuesta.clone());
-    return respuesta;
-  } catch (error) {
-    const guardada = await cache.match(peticion, { ignoreSearch: true });
-    if (guardada) return guardada;
-    if (peticion.mode === 'navigate') {
-      const pagina = await cache.match('index.html');
-      if (pagina) return pagina;
-    }
-    throw error;
+  const respuesta = await fetch(peticion);
+  if (respuesta.ok) await cache.put(peticion, respuesta.clone());
+  return respuesta;
+}
+
+// Primero lo guardado, y la caché se actualiza desde la red en segundo plano.
+// Así la app abre sin Internet aunque la red se quede colgada sin fallar
+// (modo avión con VPN). Si es una página que no está guardada, index.html.
+async function responder(evento) {
+  const peticion = evento.request;
+  const cache = await caches.open(CACHE);
+  const guardada = await cache.match(peticion, { ignoreSearch: true });
+  if (guardada) {
+    // Sin red la actualización falla o no termina; no importa.
+    evento.waitUntil(actualizar(peticion).catch(() => {}));
+    return guardada;
   }
+  if (peticion.mode === 'navigate') {
+    const pagina = await cache.match('index.html');
+    if (pagina) return pagina;
+  }
+  return actualizar(peticion);
 }
 
 self.addEventListener('fetch', (evento) => {
   const peticion = evento.request;
   if (peticion.method !== 'GET') return;
   if (new URL(peticion.url).origin !== self.location.origin) return;
-  evento.respondWith(responder(peticion));
+  evento.respondWith(responder(evento));
 });
