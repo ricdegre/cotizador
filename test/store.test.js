@@ -28,7 +28,19 @@ function estropear(almacen, texto) {
   for (const clave of almacen.datos.keys()) almacen.datos.set(clave, texto);
 }
 
-const negocioVacio = { nombre: '', telefono: '', codigoPais: '1', impuesto: 0, nota: '', idioma: 'es' };
+const negocioVacio = {
+  nombre: '',
+  telefono: '',
+  direccion: '',
+  ciudad: '',
+  estado: '',
+  codigoPostal: '',
+  email: '',
+  codigoPais: '1',
+  impuesto: 0,
+  nota: '',
+  idioma: 'es',
+};
 
 test('leerNegocio sin datos da valores por defecto', () => {
   const store = crearStore(almacenFalso());
@@ -40,6 +52,11 @@ test('guardarNegocio guarda y leerNegocio lo recupera', () => {
   const negocio = {
     nombre: 'Plomería Ruiz',
     telefono: '555 123 4567',
+    direccion: 'Av. Central 10',
+    ciudad: 'Puebla',
+    estado: 'Puebla',
+    codigoPostal: '72000',
+    email: 'hola@plomeria.test',
     codigoPais: '52',
     impuesto: 16,
     nota: 'Válida por 15 días',
@@ -174,7 +191,15 @@ test('leerCotizacion devuelve la cotización con ese número', () => {
   });
   const leida = store.leerCotizacion(2);
   assert.equal(leida.notas, 'segunda');
-  assert.deepEqual(leida.cliente, { nombre: 'Luis', telefono: '555' });
+  assert.deepEqual(leida.cliente, {
+    nombre: 'Luis',
+    telefono: '555',
+    direccion: '',
+    ciudad: '',
+    estado: '',
+    codigoPostal: '',
+    email: '',
+  });
   assert.deepEqual(leida.lineas, [{ descripcion: 'Pintura', cantidad: 2, precio: 15000 }]);
   assert.equal(store.leerCotizacion('1').notas, 'primera');
   assert.equal(store.leerCotizacion(99), null);
@@ -289,20 +314,34 @@ test('si getItem lanza un error, da valores por defecto', () => {
 });
 
 
-test('guardarCliente guarda nombre y teléfono', () => {
+test('guardarCliente guarda todos los datos del cliente', () => {
   const store = crearStore(almacenFalso());
-  assert.deepEqual(store.guardarCliente({ nombre: 'Ana', telefono: '555' }), {
+  const cliente = {
     nombre: 'Ana',
     telefono: '555',
-  });
-  assert.deepEqual(store.listarClientes(), [{ nombre: 'Ana', telefono: '555' }]);
+    direccion: 'Calle Uno 2',
+    ciudad: 'León',
+    estado: 'Guanajuato',
+    codigoPostal: '37000',
+    email: 'ana@example.test',
+  };
+  assert.deepEqual(store.guardarCliente(cliente), cliente);
+  assert.deepEqual(store.listarClientes(), [cliente]);
 });
 
 test('guardarCliente actualiza el teléfono si el nombre ya existe', () => {
   const store = crearStore(almacenFalso());
   store.guardarCliente({ nombre: 'Ana', telefono: '111' });
   store.guardarCliente({ nombre: '  ANA ', telefono: '222' });
-  assert.deepEqual(store.listarClientes(), [{ nombre: 'ANA', telefono: '222' }]);
+  assert.deepEqual(store.listarClientes(), [{
+    nombre: 'ANA',
+    telefono: '222',
+    direccion: '',
+    ciudad: '',
+    estado: '',
+    codigoPostal: '',
+    email: '',
+  }]);
 });
 
 test('guardarCliente sin nombre no guarda nada', () => {
@@ -328,7 +367,107 @@ test('borrarCliente borra por nombre y avisa si no existía', () => {
   store.guardarCliente({ nombre: 'Ana', telefono: '111' });
   store.guardarCliente({ nombre: 'Luis', telefono: '222' });
   assert.equal(store.borrarCliente('  ANA '), true);
-  assert.deepEqual(store.listarClientes(), [{ nombre: 'Luis', telefono: '222' }]);
+  assert.deepEqual(store.listarClientes(), [{
+    nombre: 'Luis',
+    telefono: '222',
+    direccion: '',
+    ciudad: '',
+    estado: '',
+    codigoPostal: '',
+    email: '',
+  }]);
   assert.equal(store.borrarCliente('Ana'), false);
   assert.equal(store.borrarCliente(''), false);
+});
+
+
+test('datos antiguos del negocio cargan los campos nuevos vacíos', () => {
+  const almacen = almacenFalso();
+  almacen.setItem('cotiza.negocio', JSON.stringify({
+    nombre: 'Jardines',
+    telefono: '555',
+    impuesto: 16,
+  }));
+  assert.deepEqual(crearStore(almacen).leerNegocio(), {
+    ...negocioVacio,
+    nombre: 'Jardines',
+    telefono: '555',
+    impuesto: 16,
+  });
+});
+
+test('clientes antiguos cargan los campos nuevos vacíos', () => {
+  const almacen = almacenFalso();
+  almacen.setItem('cotiza.clientes', JSON.stringify([{ nombre: 'Ana', telefono: '555' }]));
+  assert.deepEqual(crearStore(almacen).listarClientes(), [{
+    nombre: 'Ana',
+    telefono: '555',
+    direccion: '',
+    ciudad: '',
+    estado: '',
+    codigoPostal: '',
+    email: '',
+  }]);
+});
+
+test('la cotización guarda una copia de todos los datos del cliente', () => {
+  const store = crearStore(almacenFalso());
+  const cliente = {
+    nombre: 'Ana',
+    telefono: '555',
+    direccion: 'Calle Uno 2',
+    ciudad: 'León',
+    estado: 'Guanajuato',
+    codigoPostal: '37000',
+    email: 'ana@example.test',
+  };
+  const guardada = store.guardarCotizacion({ cliente, fecha: '2027-02-03' });
+  cliente.nombre = 'Cambiado';
+  cliente.email = 'otro@example.test';
+  assert.deepEqual(store.leerCotizacion(guardada.numero).cliente, {
+    nombre: 'Ana',
+    telefono: '555',
+    direccion: 'Calle Uno 2',
+    ciudad: 'León',
+    estado: 'Guanajuato',
+    codigoPostal: '37000',
+    email: 'ana@example.test',
+  });
+  assert.equal(store.leerCotizacion(guardada.numero).fecha, '2027-02-03');
+});
+
+test('cotizaciones antiguas cargan los campos nuevos del cliente vacíos', () => {
+  const almacen = almacenFalso();
+  almacen.setItem('cotiza.cotizaciones', JSON.stringify([{
+    numero: 1,
+    fecha: '2026-01-15',
+    cliente: { nombre: 'Ana', telefono: '555' },
+  }]));
+  assert.deepEqual(crearStore(almacen).leerCotizacion(1).cliente, {
+    nombre: 'Ana',
+    telefono: '555',
+    direccion: '',
+    ciudad: '',
+    estado: '',
+    codigoPostal: '',
+    email: '',
+  });
+});
+
+test('editar un cliente permite cambiar el nombre sin duplicarlo', () => {
+  const store = crearStore(almacenFalso());
+  store.guardarCliente({ nombre: 'Ana', telefono: '111' });
+  store.guardarCliente({ nombre: 'Ana María', telefono: '222' }, 'Ana');
+  assert.equal(store.listarClientes().length, 1);
+  assert.equal(store.listarClientes()[0].nombre, 'Ana María');
+  assert.equal(store.listarClientes()[0].telefono, '222');
+});
+
+test('editar un servicio permite cambiar la descripción sin duplicarlo', () => {
+  const store = crearStore(almacenFalso());
+  store.guardarServicio({ descripcion: 'Poda', precio: 20000 });
+  store.guardarServicio({ descripcion: 'Poda de jardín', precio: 25000 }, 'Poda');
+  assert.deepEqual(store.listarServicios(), [
+    { descripcion: 'Poda de jardín', precio: 25000 },
+  ]);
 });

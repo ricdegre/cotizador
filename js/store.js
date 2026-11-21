@@ -46,6 +46,11 @@ function normalizarNegocio(negocio) {
   return {
     nombre: texto(origen.nombre),
     telefono: texto(origen.telefono),
+    direccion: texto(origen.direccion),
+    ciudad: texto(origen.ciudad),
+    estado: texto(origen.estado),
+    codigoPostal: texto(origen.codigoPostal),
+    email: texto(origen.email),
     codigoPais,
     impuesto: noNegativo(origen.impuesto),
     nota: texto(origen.nota),
@@ -72,6 +77,11 @@ function normalizarCliente(cliente) {
   return {
     nombre: texto(origen.nombre).trim(),
     telefono: texto(origen.telefono).trim(),
+    direccion: texto(origen.direccion).trim(),
+    ciudad: texto(origen.ciudad).trim(),
+    estado: texto(origen.estado).trim(),
+    codigoPostal: texto(origen.codigoPostal).trim(),
+    email: texto(origen.email).trim(),
   };
 }
 
@@ -101,7 +111,11 @@ export function crearStore(almacen) {
     if (!Array.isArray(lista)) return [];
     return lista
       .filter((cotizacion) => esObjeto(cotizacion) && numeroValido(cotizacion.numero))
-      .map((cotizacion) => ({ ...cotizacion, numero: numeroValido(cotizacion.numero) }));
+      .map((cotizacion) => ({
+        ...cotizacion,
+        numero: numeroValido(cotizacion.numero),
+        cliente: normalizarCliente(cotizacion.cliente),
+      }));
   }
 
   function leerClientes() {
@@ -145,6 +159,7 @@ export function crearStore(almacen) {
       const nueva = { ...(esObjeto(cotizacion) ? cotizacion : {}) };
       nueva.numero = numeroValido(nueva.numero) || ultimo + 1;
       if (!texto(nueva.fecha)) nueva.fecha = new Date().toISOString();
+      nueva.cliente = normalizarCliente(nueva.cliente);
 
       const resto = lista.filter((guardada) => guardada.numero !== nueva.numero);
       resto.push(nueva);
@@ -176,14 +191,20 @@ export function crearStore(almacen) {
       );
     },
 
-    // Reemplaza el cliente con el mismo nombre. Sin nombre -> null.
-    guardarCliente(cliente) {
+    // Reemplaza el cliente con el nombre anterior o el mismo nombre. Sin nombre -> null.
+    guardarCliente(cliente, nombreAnterior) {
       const limpio = normalizarCliente(cliente);
       if (!limpio.nombre) return null;
       const lista = leerClientes();
-      const indice = lista.findIndex(
-        (guardado) => claveCliente(guardado.nombre) === claveCliente(limpio.nombre),
-      );
+      const anterior = claveCliente(nombreAnterior);
+      let indice = anterior
+        ? lista.findIndex((guardado) => claveCliente(guardado.nombre) === anterior)
+        : -1;
+      if (indice < 0) {
+        indice = lista.findIndex(
+          (guardado) => claveCliente(guardado.nombre) === claveCliente(limpio.nombre),
+        );
+      }
       if (indice >= 0) lista[indice] = limpio;
       else lista.push(limpio);
       escribir(CLAVES.clientes, lista);
@@ -204,14 +225,20 @@ export function crearStore(almacen) {
       return leerServicios();
     },
 
-    // Reemplaza el servicio con la misma descripción. Sin descripción -> null.
-    guardarServicio(servicio) {
+    // Reemplaza el servicio con la descripción anterior o la misma descripción.
+    guardarServicio(servicio, descripcionAnterior) {
       const limpio = normalizarServicio(servicio);
       if (!limpio.descripcion) return null;
       const lista = leerServicios();
-      const indice = lista.findIndex(
-        (guardado) => claveServicio(guardado.descripcion) === claveServicio(limpio.descripcion),
-      );
+      const anterior = claveServicio(descripcionAnterior);
+      let indice = anterior
+        ? lista.findIndex((guardado) => claveServicio(guardado.descripcion) === anterior)
+        : -1;
+      if (indice < 0) {
+        indice = lista.findIndex(
+          (guardado) => claveServicio(guardado.descripcion) === claveServicio(limpio.descripcion),
+        );
+      }
       if (indice >= 0) lista[indice] = limpio;
       else lista.push(limpio);
       escribir(CLAVES.servicios, lista);
