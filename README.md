@@ -2,6 +2,12 @@
 
 A free web app for tradespeople (plumbers, painters, gardeners and similar) to write a quote on their phone and send it by WhatsApp or as a PDF.
 
+## Screenshots
+
+With sample data: a printed quote, and the history and saved customers on a phone.
+
+<p><img src="docs/quote-print.png" alt="Printed quote" width="480"> <img src="docs/quote-history.png" alt="Quote history" width="220"> <img src="docs/business-customers.png" alt="Saved customers" width="220"></p>
+
 ## What it does
 
 - **Quotes with line items and tax.** Add and remove lines with a description, quantity and price. The subtotal, tax and total update as you type. You set the tax percentage once in the business section.
